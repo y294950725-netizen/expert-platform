@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>专家思维提取 — 摸底方案</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; color: #1a1a2e; background: #f8f9fc; line-height: 1.7; }
+  .container { max-width: 920px; margin: 0 auto; padding: 60px 40px 80px; }
+
+  .header { text-align: center; margin-bottom: 48px; }
+  .header h1 { font-size: 34px; font-weight: 700; margin-bottom: 10px; }
+  .header .subtitle { font-size: 15px; color: #888; }
+
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, #ddd, transparent); margin: 48px 0; }
+
+  .viewpoint { background: linear-gradient(135deg, #1a1a2e, #2d2d5e); color: #fff; border-radius: 16px; padding: 36px 40px; margin-bottom: 48px; }
+  .viewpoint .vp-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+  .viewpoint h2 { font-size: 22px; font-weight: 700; margin-bottom: 14px; line-height: 1.4; }
+  .viewpoint p { font-size: 15px; color: rgba(255,255,255,0.75); }
+
+  .hypo-intro { text-align: center; margin-bottom: 24px; }
+  .hypo-intro h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .hypo-intro p { font-size: 14px; color: #888; }
+
+  .hypos { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px; }
+  .hypo { border-radius: 14px; padding: 28px 26px; }
+  .hypo.h-a { background: #f0f4ff; border: 1px solid #c8d6f0; }
+  .hypo.h-b { background: #fff8f0; border: 1px solid #f0dcc0; }
+  .hypo .tag { display: inline-block; font-size: 11px; font-weight: 700; color: #fff; border-radius: 4px; padding: 2px 10px; margin-bottom: 14px; letter-spacing: 1px; }
+  .hypo.h-a .tag { background: #4a7fd4; }
+  .hypo.h-b .tag { background: #d4944a; }
+  .hypo h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+  .hypo .desc { font-size: 14px; color: #555; margin-bottom: 16px; }
+  .hypo .prove { border-top: 1px solid rgba(0,0,0,0.06); padding-top: 16px; }
+  .hypo .prove h4 { font-size: 13px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .hypo .prove p { font-size: 13px; color: #555; line-height: 1.7; }
+  .hypo .prove .method-box { background: rgba(255,255,255,0.7); border-radius: 8px; padding: 14px 16px; margin-top: 10px; }
+  .hypo.h-a .prove .method-box { border: 1px solid #d8e2f4; }
+  .hypo.h-b .prove .method-box { border: 1px solid #f0e0c8; }
+
+  .converge { text-align: center; padding: 28px; margin-bottom: 48px; }
+  .converge-arrow { font-size: 32px; color: #ccc; margin-bottom: 12px; }
+  .converge-box { display: inline-block; background: linear-gradient(135deg, #e8ffe8, #f0fff0); border: 2px solid #b8e0b8; border-radius: 14px; padding: 22px 36px; }
+  .converge-box h3 { font-size: 18px; font-weight: 700; color: #2d8a2d; margin-bottom: 6px; }
+  .converge-box p { font-size: 14px; color: #555; }
+
+  .section { margin-bottom: 48px; }
+  .section-label { display: inline-block; font-size: 11px; font-weight: 700; color: #fff; background: #5b5fc7; border-radius: 4px; padding: 3px 10px; margin-bottom: 10px; letter-spacing: 1px; }
+  .section h2 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+  .section-desc { font-size: 14px; color: #888; margin-bottom: 28px; }
+
+  .steps { position: relative; padding-left: 40px; }
+  .steps::before { content: ''; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 2px; background: #e0e0e8; }
+  .step { position: relative; margin-bottom: 36px; }
+  .step:last-child { margin-bottom: 0; }
+  .step-num { position: absolute; left: -40px; top: 2px; width: 30px; height: 30px; border-radius: 50%; background: #5b5fc7; color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; z-index: 1; }
+  .step h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .step > p { font-size: 14px; color: #444; }
+
+  .insight { background: #fffbe6; border-left: 4px solid #faad14; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 14px 0 0; }
+  .insight p { font-size: 13px; color: #666; }
+  .insight strong { color: #1a1a2e; }
+
+  /* Case toggle */
+  .case-toggle { margin-top: 16px; }
+  .case-toggle summary { cursor: pointer; font-size: 14px; font-weight: 700; color: #5b5fc7; padding: 10px 16px; background: #f5f3ff; border: 1px solid #e0ddf0; border-radius: 8px; list-style: none; display: flex; align-items: center; gap: 8px; user-select: none; transition: background 0.15s; }
+  .case-toggle summary:hover { background: #ece8ff; }
+  .case-toggle summary::before { content: '▶'; font-size: 10px; transition: transform 0.2s; }
+  .case-toggle[open] summary::before { transform: rotate(90deg); }
+  .case-toggle .case-body { margin-top: 14px; border: 1px solid #e0ddf0; border-radius: 12px; overflow: hidden; }
+
+  .case-header { background: #f8f7ff; padding: 18px 22px; border-bottom: 1px solid #e8e6f0; }
+  .case-header h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .case-header p { font-size: 12px; color: #888; }
+  .case-phase { padding: 20px 22px; border-bottom: 1px solid #f0f0f5; }
+  .case-phase:last-child { border-bottom: none; }
+  .case-phase .phase-label { font-size: 11px; font-weight: 700; color: #5b5fc7; letter-spacing: 1px; margin-bottom: 10px; }
+  .case-phase .phase-num { font-size: 11px; font-weight: 700; color: #fff; background: #5b5fc7; border-radius: 3px; padding: 1px 7px; margin-right: 6px; }
+
+  .case-nodes { margin: 10px 0; }
+  .case-node { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; font-size: 13px; }
+  .case-node .cn-tag { flex-shrink: 0; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-top: 1px; }
+  .cn-q { background: #e8f0fe; color: #3a6abf; }
+  .cn-a { background: #e8fee8; color: #2d8a2d; }
+  .cn-r { background: #fee8e8; color: #cf1322; }
+
+  .case-tree { font-family: "SF Mono", "Fira Code", monospace; font-size: 12px; color: #555; background: #fafafa; border-radius: 8px; padding: 16px 20px; line-height: 1.9; margin: 10px 0; white-space: pre; }
+  .case-tree .hl { color: #5b5fc7; font-weight: 700; }
+  .case-tree .red { color: #cf1322; font-weight: 700; }
+
+  .two-tests { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .test-card { border-radius: 10px; padding: 20px 22px; }
+  .test-card.tc-a { background: #f0f4ff; border: 1px solid #d0d8f0; }
+  .test-card.tc-b { background: #fff8f0; border: 1px solid #f0dcc0; }
+  .test-card .tc-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+  .test-card.tc-a .tc-label { color: #4a7fd4; }
+  .test-card.tc-b .tc-label { color: #d4944a; }
+  .test-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .test-card p { font-size: 13px; color: #555; }
+
+  .matrix { display: grid; grid-template-columns: 140px 1fr 1fr; gap: 0; margin: 20px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e0e0e8; }
+  .matrix .cell { padding: 16px 20px; font-size: 14px; }
+  .matrix .hdr { background: #f0f0f5; font-weight: 700; font-size: 13px; color: #666; text-align: center; display: flex; align-items: center; justify-content: center; }
+  .matrix .rl { background: #f8f8fc; font-weight: 700; font-size: 14px; border-right: 1px solid #e0e0e8; display: flex; align-items: center; }
+  .matrix .hp { background: #fff0f0; }
+  .matrix .mp { background: #fffbe6; }
+  .matrix .lp { background: #f0fff4; }
+  .matrix .cell .t { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .matrix .cell .d { font-size: 12px; color: #888; }
+
+  .deliverables { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px; }
+  .del { background: #fff; border: 1px solid #e8e8f0; border-radius: 10px; padding: 16px 18px; display: flex; align-items: center; gap: 12px; }
+  .del .icon { font-size: 22px; }
+  .del .text { font-size: 13px; color: #444; }
+  .del .text strong { color: #1a1a2e; }
+
+  .methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0 0; }
+  .method { text-align: center; padding: 16px 14px; background: #fff; border-radius: 10px; border: 1px solid #e8e8f0; }
+  .method h4 { font-size: 13px; font-weight: 700; color: #5b5fc7; margin-bottom: 2px; }
+  .method .yr { font-size: 11px; color: #bbb; margin-bottom: 5px; }
+  .method p { font-size: 12px; color: #777; line-height: 1.5; }
+
+  .baseline-value { background: #fff; border: 1px solid #e0e0e8; border-radius: 14px; padding: 28px 30px; margin-top: 28px; }
+  .baseline-value h3 { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+  .bv-items { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .bv-item { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #555; }
+  .bv-item .bv-num { width: 24px; height: 24px; border-radius: 50%; background: #5b5fc7; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+  .dialogue-box { background: #f8f8fc; border-radius: 8px; padding: 14px 16px; font-size: 13px; color: #555; margin-bottom: 12px; }
+  .dialogue-box .role { font-weight: 700; margin-bottom: 2px; }
+  .dialogue-box .role.user { color: #666; }
+  .dialogue-box .role.expert { color: #5b5fc7; }
+  .dialogue-box .turn { margin-bottom: 10px; }
+  .dialogue-box .turn:last-child { margin-bottom: 0; }
+  .dialogue-box .prompt-line { color: #5b5fc7; font-weight: 700; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #ddd; }
+
+  @media print { body { background: #fff; } .container { padding: 24px; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>摸底方案</h1>
+    <p class="subtitle">专家思维提取 · 如何科学判断哪些能力值得投入</p>
+  </div>
+
+  <div class="viewpoint">
+    <div class="vp-label">核心观点</div>
+    <h2>摸底 = 给通用大模型做诊断。<br>诊断两件事：不会的地方在哪，会但不稳的地方在哪。<br>诊断数据就是 baseline。</h2>
+    <p>不靠主观判断排优先级——用数据证明哪些模块需要提取、提取后价值多大。</p>
+  </div>
+
+  <!-- Two hypotheses -->
+  <div class="hypo-intro">
+    <h2>两个假设，两种证明</h2>
+  </div>
+
+  <div class="hypos">
+    <div class="hypo h-a">
+      <span class="tag">假设 A</span>
+      <h3>通用大模型不会</h3>
+      <p class="desc">专家知识是私有的、模型训练数据里没有，从根本上缺这个能力。</p>
+      <div class="prove">
+        <h4>怎么证明</h4>
+        <p>在决策树的关键判断节点做<strong>截断测试</strong>——把真实对话上下文给模型，问"下一步怎么做"，看行动方向对不对。</p>
+        <div class="method-box">
+          <p><strong>判定</strong>：行动方向与专家实际做法<strong>不同</strong> = 不会。</p>
+        </div>
+      </div>
+    </div>
+    <div class="hypo h-b">
+      <span class="tag">假设 B</span>
+      <h3>通用大模型会，但不稳定</h3>
+      <p class="desc">训练数据里吃过专家的书/视频/公开内容，"知道"答案，但无法稳定执行决策路径。</p>
+      <div class="prove">
+        <h4>怎么证明</h4>
+        <p>同一个截断节点，<strong>跑多次</strong>（temperature > 0），看每次的行动方向是否一致。</p>
+        <div class="method-box">
+          <p><strong>判定</strong>：多次结果<strong>不一致</strong> = 会但不稳。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="converge">
+    <div class="converge-arrow">↓</div>
+    <div class="converge-box">
+      <h3>两个证明跑完 = baseline</h3>
+      <p>每个模块、每个节点都有数据：对不对 × 稳不稳。<br>提取完成后再跑一遍同样的测试，对比即可证明提取价值。</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Steps -->
+  <div class="section">
+    <span class="section-label">执行方案</span>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>全量转文本</h3>
+        <p>所有素材（视频/书/访谈/PPT）统一转为文本语料库，标注来源和位置。</p>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>主题聚类 → 能力模块归纳</h3>
+        <p>AI 将全部素材聚类为话题，再归纳为 15-20 个能力模块。专家确认划分和产品范围。</p>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>自动提取决策树骨架</h3>
+        <p>从素材中自动提取每个模块的决策路径，生成决策树初稿。</p>
+
+        <details class="case-toggle">
+          <summary>Case：某睡眠专家 ·「入睡困难」模块的决策树提取</summary>
+          <div class="case-body">
+            <div class="case-header">
+              <h4>假设专家有 80 个短视频、2 本书、6 段直播连麦涉及「入睡困难」话题</h4>
+              <p>从 Step 2 聚类后，「入睡困难的分层干预」被归为一个能力模块</p>
+            </div>
+
+            <div class="case-phase">
+              <p class="phase-label"><span class="phase-num">1</span>提取节点</p>
+              <p style="font-size:13px;color:#555;margin-bottom:10px;">AI 扫描该模块所有素材，提取专家反复出现的判断和行动：</p>
+              <div class="case-nodes">
+                <div class="case-node"><span class="cn-tag cn-q">判断</span><span>先区分躺下后多久睡不着——30分钟以内不算入睡困难，不要过度干预</span></div>
+                <div class="case-node"><span class="cn-tag cn-q">判断</span><span>入睡困难但白天不困 → 可能是睡眠时间需求本身就少，不是失眠</span></div>
+                <div class="case-node"><span class="cn-tag cn-q">判断</span><span>躺下脑子停不下来 vs 身体躺不住——两个方向完全不同</span></div>
+                <div class="case-node"><span class="cn-tag cn-a">行动</span><span>脑子停不下来 → 先确认是焦虑反刍还是兴奋联想，干预手段不同</span></div>
+                <div class="case-node"><span class="cn-tag cn-a">行动</span><span>焦虑反刍 → 认知搁置技术（写下来明天再想），不用呼吸法</span></div>
+                <div class="case-node"><span class="cn-tag cn-a">行动</span><span>兴奋联想 → 单调刺激法（数数/听白噪音），不用认知干预</span></div>
+                <div class="case-node"><span class="cn-tag cn-r">红线</span><span>持续 3 个月 + 伴随情绪低落/体重变化 → 必须排除抑郁，不继续给睡眠建议</span></div>
+                <div class="case-node"><span class="cn-tag cn-r">红线</span><span>正在服用安眠药想要减药 → 不给任何减药建议，转专科</span></div>
+              </div>
+            </div>
+
+            <div class="case-phase">
+              <p class="phase-label"><span class="phase-num">2</span>语义聚类</p>
+              <p style="font-size:13px;color:#555;">
+                连麦里说"你躺下脑子转不转"、视频里说"想事儿的和不想事儿的完全是两回事"、书里写"需区分认知型与躯体型入睡障碍"<br>
+                → 合并为一个标准节点：<strong>「脑子停不下来 vs 身体躺不住」</strong>
+              </p>
+            </div>
+
+            <div class="case-phase">
+              <p class="phase-label"><span class="phase-num">3</span>生成决策树</p>
+              <p style="font-size:13px;color:#555;margin-bottom:10px;">所有路径叠加后生成：</p>
+              <div class="case-tree"><span class="hl">用户说"躺下睡不着"</span>
+  <span class="hl">├─</span> 多久睡不着？
+  │   <span class="hl">├─</span> &lt;30min → 不算入睡困难，做预期管理
+  │   <span class="hl">└─</span> &gt;30min → 继续
+  │       <span class="hl">├─</span> 白天困不困？
+  │       │   <span class="hl">├─</span> 不困 → 可能是短睡眠者，调整预期
+  │       │   <span class="hl">└─</span> 困 → 确认入睡困难，继续分型
+  │       │       <span class="hl">├─</span> 脑子停不下来
+  │       │       │   <span class="hl">├─</span> 焦虑反刍（担心/后悔/怕）→ 认知搁置
+  │       │       │   <span class="hl">└─</span> 兴奋联想（计划/回忆/脑洞）→ 单调刺激
+  │       │       <span class="hl">└─</span> 身体躺不住（翻来覆去/腿不安）→ 躯体评估
+  │       <span class="hl">└─</span> 持续 &gt;3月 + 情绪变化 → <span class="red">⚠️ 排除抑郁，转介</span></div>
+              <p style="font-size:12px;color:#999;">这棵树由 4 段连麦 + 1 本书综合提取，核心分支在 5 条素材中反复出现。</p>
+            </div>
+          </div>
+        </details>
+
+        <div class="insight"><p>决策树用于下一步的诊断测试，同时也是后续挖掘阶段的初稿。</p></div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>在决策树上做诊断</h3>
+        <p>在决策树的每个分叉节点，分别证明两个假设：</p>
+
+        <div class="two-tests">
+          <div class="test-card tc-a">
+            <div class="tc-label">证明假设 A</div>
+            <h4>截断测试 · 对不对</h4>
+            <p>把到达该节点的上下文给模型，问"下一步怎么做"，跟专家实际做法对比。</p>
+            <p style="margin-top:8px;font-size:12px;color:#888;">行动方向不同 = 不会</p>
+          </div>
+          <div class="test-card tc-b">
+            <div class="tc-label">证明假设 B</div>
+            <h4>一致性测试 · 稳不稳</h4>
+            <p>同一节点跑 N 次（temperature > 0），看每次结果是否一致。</p>
+            <p style="margin-top:8px;font-size:12px;color:#888;">结果不一致 = 会但不稳</p>
+          </div>
+        </div>
+
+        <details class="case-toggle">
+          <summary>Case：在「入睡困难」决策树上跑诊断</summary>
+          <div class="case-body">
+            <div class="case-header">
+              <h4>测试节点：「脑子停不下来」→ 焦虑反刍 vs 兴奋联想</h4>
+              <p>这是该专家的私有判断——通用指南里不区分这两类，统一建议"放松训练"</p>
+            </div>
+
+            <div class="case-phase">
+              <p class="phase-label"><span class="phase-num">A</span>截断测试：对不对</p>
+              <p style="font-size:13px;color:#555;margin-bottom:10px;">给模型以下上下文，遮住专家后续做法：</p>
+              <div class="dialogue-box">
+                <div class="turn"><span class="role user">用户：</span>我每天晚上躺下至少一个小时睡不着</div>
+                <div class="turn"><span class="role expert">专家：</span>白天会困吗？</div>
+                <div class="turn"><span class="role user">用户：</span>困，上班都打瞌睡</div>
+                <div class="turn"><span class="role expert">专家：</span>躺下的时候是脑子停不下来，还是身体翻来覆去？</div>
+                <div class="turn"><span class="role user">用户：</span>脑子停不下来，一直在想事情</div>
+                <p class="prompt-line">→ 模型，你下一步会怎么做？</p>
+              </div>
+              <p style="font-size:13px;color:#555;"><strong>专家实际做法</strong>：追问"想的是什么类型的事——是担心明天的工作，还是脑子里冒出各种乱七八糟的想法？"以此区分焦虑反刍和兴奋联想，给不同干预。</p>
+              <p style="font-size:13px;color:#555;margin-top:6px;"><strong>模型回答</strong>：直接给了"4-7-8 呼吸法 + 睡前不看手机"。</p>
+              <p style="font-size:13px;color:#cf1322;font-weight:700;margin-top:8px;">→ 判定：❌ 不会。跳过了关键分型，直接给通用方案。</p>
+            </div>
+
+            <div class="case-phase">
+              <p class="phase-label"><span class="phase-num">B</span>一致性测试：稳不稳</p>
+              <p style="font-size:13px;color:#555;margin-bottom:10px;">同一截断点跑 5 次：</p>
+              <div style="font-size:13px;color:#555;line-height:2;">
+                <p>第 1 次：直接给呼吸法 &nbsp;❌</p>
+                <p>第 2 次：追问"想什么事" &nbsp;✅ 但没有区分焦虑/兴奋</p>
+                <p>第 3 次：建议写睡眠日记 &nbsp;❌</p>
+                <p>第 4 次：直接给认知行为疗法介绍 &nbsp;❌</p>
+                <p>第 5 次：追问"想什么事" &nbsp;✅ 但没有区分焦虑/兴奋</p>
+              </div>
+              <p style="font-size:13px;color:#d4944a;font-weight:700;margin-top:8px;">→ 判定：⚠️ 不稳定。5 次中 2 次追问了但追问方向不对，3 次直接跳过。路径未固化。</p>
+            </div>
+
+            <div class="case-phase">
+              <p class="phase-label" style="color:#2d8a2d;"><span class="phase-num" style="background:#2d8a2d;">✓</span>结论</p>
+              <p style="font-size:13px;color:#555;">这个节点同时命中两个假设：模型<strong>不知道要区分焦虑反刍和兴奋联想</strong>（假设A），即使偶尔追问了也<strong>不知道区分后该给不同方案</strong>（假设B）。标记为高优先提取节点。</p>
+            </div>
+          </div>
+        </details>
+
+        <div class="insight"><p>截断点不需要人工选——Step 3 的决策树已找到所有分叉节点，直接在这些节点上跑测试。</p></div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <h3>输出优先级 + baseline</h3>
+        <p>每个模块、每个节点的诊断数据汇总，按「不会」和「不稳」两个维度交叉排优先级。</p>
+      </div>
+
+    </div>
+
+    <!-- Matrix -->
+    <div class="matrix">
+      <div class="cell hdr"></div>
+      <div class="cell hdr">差距小（大多做对且稳定）</div>
+      <div class="cell hdr">差距大（做错或不稳定）</div>
+      <div class="cell rl">复杂度高</div>
+      <div class="cell mp"><div class="t" style="color:#d48806;">中优先级</div><div class="d">当前能做但复杂度高，不稳定风险大</div></div>
+      <div class="cell hp"><div class="t" style="color:#cf1322;">最高优先级</div><div class="d">又难又做不好，提取价值最大</div></div>
+      <div class="cell rl">复杂度低</div>
+      <div class="cell lp"><div class="t" style="color:#389e0d;">最低优先级</div><div class="d">简单且做得到</div></div>
+      <div class="cell mp"><div class="t" style="color:#d48806;">中优先级</div><div class="d">简单但做不好，可能 prompt 能修</div></div>
+    </div>
+
+    <!-- Baseline value -->
+    <div class="baseline-value">
+      <h3>Baseline 数据的价值</h3>
+      <div class="bv-items">
+        <div class="bv-item"><span class="bv-num">1</span><span>排优先级——数据驱动决定先提取哪个模块</span></div>
+        <div class="bv-item"><span class="bv-num">2</span><span>证明价值——提取完成后跑同样测试，对比提升幅度</span></div>
+        <div class="bv-item"><span class="bv-num">3</span><span>定位节点——精确到每个判断节点的差距，挖掘目标明确</span></div>
+        <div class="bv-item"><span class="bv-num">4</span><span>持续监控——模型迭代后重跑测试，判断是否需要更新</span></div>
+      </div>
+    </div>
+
+    <!-- Deliverables -->
+    <h3 style="font-size:16px; margin-top:32px; margin-bottom:6px;">摸底交付物</h3>
+    <div class="deliverables">
+      <div class="del"><span class="icon">📋</span><span class="text"><strong>能力模块清单</strong>（专家确认版）</span></div>
+      <div class="del"><span class="icon">🌳</span><span class="text"><strong>决策树初稿</strong>（直接进入挖掘）</span></div>
+      <div class="del"><span class="icon">📊</span><span class="text"><strong>每个节点的诊断数据</strong>（对不对 × 稳不稳）</span></div>
+      <div class="del"><span class="icon">🎯</span><span class="text"><strong>优先级排序</strong> + baseline</span></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Method sources -->
+  <div class="section">
+    <span class="section-label">方法论来源</span>
+    <div class="methods">
+      <div class="method">
+        <h4>ACTA</h4>
+        <div class="yr">1998 · 认知任务分析</div>
+        <p>识别任务中的认知密集环节，确定哪些步骤需要复杂判断</p>
+      </div>
+      <div class="method">
+        <h4>NTT 决策树自动化</h4>
+        <div class="yr">2025 · 对话→决策流程</div>
+        <p>从对话素材自动提取决策路径，生成决策树（还原率 ~90%）</p>
+      </div>
+      <div class="method">
+        <h4>截断测试 (NUP)</h4>
+        <div class="yr">2016-2025 · 下一句预测</div>
+        <p>在对话关键节点截断让模型"填空"，对比专家实际行为</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

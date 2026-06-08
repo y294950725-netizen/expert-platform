@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>专家知识提取方案</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #ffffff;
+    --bg-warm: #fafaf8;
+    --surface: #f6f6f4;
+    --surface-2: #eeeeec;
+    --border: #e8e8e4;
+    --border-strong: #d4d4d0;
+    --text: #1a1a1a;
+    --text-2: #333333;
+    --text-dim: #666666;
+    --text-muted: #999999;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --accent-mid: #dbeafe;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fde68a;
+    --rose: #dc2626;
+    --rose-bg: #fef2f2;
+    --rose-border: #fecaca;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --purple-border: #ddd6fe;
+    --teal: #0d9488;
+    --teal-bg: #f0fdfa;
+    --teal-border: #99f6e4;
+    --indigo: #4f46e5;
+    --indigo-bg: #eef2ff;
+    --indigo-border: #c7d2fe;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(180deg, #f8faff 0%, #fff 100%);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -300px; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(37,99,235,0.05) 0%, rgba(124,58,237,0.03) 40%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 18px;
+    background: var(--accent-light);
+    border: 1px solid var(--blue-border);
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    max-width: 580px;
+    line-height: 1.85;
+    margin-bottom: 3rem;
+  }
+
+  .hero-deliverables {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 560px;
+    width: 100%;
+  }
+
+  .hero-del {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.8rem 1.5rem;
+    text-align: left;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+  }
+  .hero-del:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+
+  .hero-del .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin-bottom: 0.8rem;
+  }
+  .hero-del:nth-child(1) .num { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+  .hero-del:nth-child(2) .num { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+
+  .hero-del h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .hero-del p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    animation: float 2.5s ease-in-out infinite;
+  }
+  .scroll-hint svg { width: 18px; height: 18px; opacity: 0.4; }
+  @keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ===================== LAYOUT ===================== */
+  .container { max-width: 1060px; margin: 0 auto; padding: 0 2rem; }
+  section { padding: 5rem 0; position: relative; }
+  section + section { border-top: 1px solid var(--border); }
+  section:nth-child(even) { background: var(--bg-warm); }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+  .section-label::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .section-title {
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-desc {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    max-width: 560px;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+  }
+
+  /* ===================== ARCHITECTURE ===================== */
+  .arch-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 2.5rem;
+  }
+
+  .arch-node {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 2rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    max-width: 680px;
+    transition: all 0.3s;
+  }
+  .arch-node:hover { box-shadow: var(--shadow); }
+
+  .arch-node h4 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.2rem; }
+  .arch-node p { font-size: 0.8rem; color: var(--text-dim); }
+
+  .arch-arrow {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    padding: 0.3rem 0;
+    opacity: 0.35;
+  }
+
+  .arch-core {
+    background: var(--bg);
+    border: 2px solid var(--blue-border);
+    border-radius: 16px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 680px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+
+  .arch-core-badge {
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 3px 14px;
+    border-radius: 100px;
+  }
+
+  .arch-layers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 0.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .arch-layer {
+    background: var(--bg-warm);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .arch-layer h5 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .arch-layer:nth-child(1) h5 { color: var(--amber); }
+  .arch-layer:nth-child(2) h5 { color: var(--blue); }
+  .arch-layer:nth-child(3) h5 { color: var(--purple); }
+  .arch-layer p { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; }
+
+  .arch-ops {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .arch-op {
+    padding: 4px 14px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .arch-op:nth-child(1) { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+  .arch-op:nth-child(2) { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+  .arch-op:nth-child(3) { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+
+  /* ===================== DECISIONS ===================== */
+  .decisions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 12px;
+  }
+
+  .decision {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.2rem 1.4rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s;
+  }
+  .decision:hover { box-shadow: var(--shadow); border-color: var(--border-strong); }
+
+  .decision-q {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .decision-a {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+  .decision-why {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  /* ===================== PHASES ===================== */
+  .phase-timeline {
+    position: relative;
+    padding-left: 60px;
+  }
+
+  .phase-timeline::before {
+    content: '';
+    position: absolute;
+    left: 23px; top: 24px; bottom: 24px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .phase-block {
+    position: relative;
+    margin-bottom: 3rem;
+  }
+  .phase-block:last-child { margin-bottom: 0; }
+
+  .phase-dot {
+    position: absolute;
+    left: -60px; top: 4px;
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    z-index: 1;
+  }
+
+  .phase-block:nth-child(1) .phase-dot { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+  .phase-block:nth-child(2) .phase-dot { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .phase-block:nth-child(3) .phase-dot { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .phase-block:nth-child(4) .phase-dot { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .phase-block:nth-child(5) .phase-dot { background: var(--teal-bg); color: var(--teal); border: 1px solid var(--teal-border); }
+
+  .phase-block h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .phase-block > p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+  }
+
+  .step-table {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .step-row {
+    display: grid;
+    grid-template-columns: 72px 1fr 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .step-row:last-child { border-bottom: none; }
+  .step-row:hover { background: var(--bg-warm); }
+  .step-row.header {
+    background: var(--surface);
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .step-cell {
+    padding: 0.8rem 1rem;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    border-right: 1px solid var(--border);
+  }
+  .step-cell:last-child { border-right: none; }
+  .step-cell strong { color: var(--text); font-weight: 600; }
+
+  .step-num {
+    font-weight: 700;
+    color: var(--text-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    background: var(--surface);
+  }
+
+  /* nested sub-steps */
+  .step-row.sub .step-num { font-size: 0.7rem; color: var(--text-muted); }
+
+  /* ===================== FLOW DIAGRAM ===================== */
+  .flow-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-top: 2rem;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .flow-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    border: 1px solid;
+  }
+
+  .flow-step:nth-child(1) .flow-icon,
+  .flow-step:nth-child(2) .flow-icon { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+  .flow-step:nth-child(4) .flow-icon,
+  .flow-step:nth-child(5) .flow-icon { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-border); }
+  .flow-step:nth-child(7) .flow-icon,
+  .flow-step:nth-child(8) .flow-icon { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+  .flow-step:nth-child(10) .flow-icon,
+  .flow-step:nth-child(11) .flow-icon { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+  .flow-step:nth-child(13) .flow-icon,
+  .flow-step:nth-child(14) .flow-icon { background: var(--teal-bg); color: var(--teal); border-color: var(--teal-border); }
+
+  .flow-content {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 1.2rem;
+    flex: 1;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .flow-content h4 { font-size: 0.85rem; font-weight: 700; }
+  .flow-content p { font-size: 0.78rem; color: var(--text-dim); }
+
+  .flow-arrow {
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 20px;
+    color: var(--text-muted);
+    opacity: 0.3;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+
+  .flow-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    padding-left: 58px;
+    margin-top: -2px;
+    margin-bottom: 2px;
+  }
+
+  /* ===================== FOOTER ===================== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    background: var(--bg-warm);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 768px) {
+    .hero-deliverables { grid-template-columns: 1fr; }
+    .arch-layers { grid-template-columns: 1fr; }
+    .decisions { grid-template-columns: 1fr; }
+    .step-row { grid-template-columns: 56px 1fr; }
+    .step-row .step-cell:nth-child(3),
+    .step-row .step-cell:nth-child(4) { display: none; }
+    .step-row.header .step-cell:nth-child(3),
+    .step-row.header .step-cell:nth-child(4) { display: none; }
+    .phase-timeline { padding-left: 0; }
+    .phase-timeline::before { display: none; }
+    .phase-dot { display: none; }
+    section { padding: 3.5rem 0; }
+    .flow-step { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="hero-badge">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    Knowledge System Architecture
+  </div>
+  <h1>专家知识提取方案</h1>
+  <p class="hero-sub">把专家的大量视频/文字素材，通过 Agentic Wiki 三层架构编译为结构化知识库，<br>接通问答并反向提炼可追溯的方法论文档</p>
+
+  <div class="scroll-hint">
+    <span>向下滚动</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+  </div>
+</section>
+
+<!-- ========== 技术架构 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Architecture</div>
+    <h2 class="section-title">技术架构</h2>
+    <p class="section-desc">基于 Karpathy LLM Wiki 的三层架构，通过 Agentic Wiki 预编译实现知识复利。</p>
+
+    <div class="arch-flow">
+      <div class="arch-node">
+        <h4>专家视频 / 文本素材（1000+）</h4>
+      </div>
+      <div class="arch-arrow">↓</div>
+
+      <div class="arch-core">
+        <div class="arch-core-badge">THREE-LAYER CORE</div>
+        <div class="arch-layers">
+          <div class="arch-layer">
+            <h5>raw/</h5>
+            <p>原文层 · 只读事实源<br>团队标注权重</p>
+          </div>
+          <div class="arch-layer">
+            <h5>wiki/</h5>
+            <p>编译层 · 结构化知识页<br>置信度 · supersession 链</p>
+          </div>
+          <div class="arch-layer">
+            <h5>CLAUDE.md</h5>
+            <p>规则层 · 编译规则+Schema<br>生命周期 · 去重/冲突</p>
+          </div>
+        </div>
+        <div class="arch-ops">
+          <span class="arch-op">Ingest 摄入</span>
+          <span class="arch-op">Query 问答</span>
+          <span class="arch-op">Lint 质检</span>
+        </div>
+      </div>
+      <div class="arch-arrow">↓</div>
+
+      <div class="arch-node">
+        <h4>多路检索（关键词 + 语义 + 知识图谱）</h4>
+        <p>三管齐下避免漏检</p>
+      </div>
+      <div class="arch-arrow">↓</div>
+
+      <div class="arch-node">
+        <h4>Opus 1M 推理</h4>
+        <p>wiki 页面 + 原文片段 → 专家级回答（带来源引用）</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 关键决策 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Key Decisions</div>
+    <h2 class="section-title">关键设计决策</h2>
+
+    <div class="decisions">
+      <div class="decision">
+        <div class="decision-q">知识编译方式</div>
+        <div class="decision-a">Agentic Wiki（非 RAG）</div>
+        <div class="decision-why">Wiki 预编译、知识复利（Karpathy 2026）</div>
+      </div>
+      <div class="decision">
+        <div class="decision-q">置信度计算</div>
+        <div class="decision-a">来源权重 x 证据强度</div>
+        <div class="decision-why">高权重视频说一次 > 十个低权重闲聊说十次</div>
+      </div>
+      <div class="decision">
+        <div class="decision-q">知识生命周期</div>
+        <div class="decision-a">出现次数分层，&ge;3 次才提炼方法论</div>
+        <div class="decision-why">区分「偶尔提到」和「核心观点」</div>
+      </div>
+      <div class="decision">
+        <div class="decision-q">新旧观点处理</div>
+        <div class="decision-a">Supersession（后期 + 高权重为准）</div>
+        <div class="decision-why">专家观点会迭代，早期不应与最新平等对待</div>
+      </div>
+      <div class="decision">
+        <div class="decision-q">Schema 来源</div>
+        <div class="decision-a">基于社区开源模板改</div>
+        <div class="decision-why">不从零写，社区已验证可行</div>
+      </div>
+      <div class="decision">
+        <div class="decision-q">方法论提炼路径</div>
+        <div class="decision-a">先结晶化再提炼</div>
+        <div class="decision-why">碎片 → 主题文档 → 方法论，有中间态更准确</div>
+      </div>
+      <div class="decision">
+        <div class="decision-q">批次一致性</div>
+        <div class="decision-a">每 10 批跑一次跨批去重合并</div>
+        <div class="decision-why">业界公认的增量编译问题</div>
+      </div>
+      <div class="decision">
+        <div class="decision-q">前端浏览</div>
+        <div class="decision-a">Obsidian</div>
+        <div class="decision-why">已有环境，业界验证可行</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 五阶段 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Phases</div>
+    <h2 class="section-title">执行路径</h2>
+    <p class="section-desc">摸底阶段已完成转写入库，本方案从 AI 编译开始，分四个阶段递进交付。</p>
+
+    <div class="phase-timeline">
+
+      <!-- Phase 1: AI 编译知识库 -->
+      <div class="phase-block">
+        <div class="phase-dot">01</div>
+        <h3>AI 编译知识库</h3>
+        <p>将原始转写稿按规则编译为结构化知识页面</p>
+        <div class="step-table">
+          <div class="step-row header">
+            <div class="step-cell step-num">#</div>
+            <div class="step-cell">动作</div>
+            <div class="step-cell">输入</div>
+            <div class="step-cell">输出</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">2.1</div>
+            <div class="step-cell"><strong>定义知识库结构规则</strong></div>
+            <div class="step-cell">社区开源 Schema 模板</div>
+            <div class="step-cell">CLAUDE.md 编译规则（页面类型、字段、去重、冲突处理、置信度公式、supersession 规则）</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">2.2</div>
+            <div class="step-cell"><strong>分批编译知识页面</strong></div>
+            <div class="step-cell">每批 20-30 份转写稿 + 编译规则 + 已有页面</div>
+            <div class="step-cell">结构化知识页面，每条标注来源、权重、出现次数、置信度</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">2.3</div>
+            <div class="step-cell"><strong>跨批去重合并</strong>（每 10 批）</div>
+            <div class="step-cell">当前全部 wiki 页面</div>
+            <div class="step-cell">合并同义概念、统一术语、处理 supersession</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">2.4</div>
+            <div class="step-cell"><strong>知识库质检 Lint</strong></div>
+            <div class="step-cell">全部知识页面</div>
+            <div class="step-cell">质检报告（孤立页面、来源缺失、未解决冲突、低置信度清单）</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="phase-block">
+        <div class="phase-dot">02</div>
+        <h3>接通问答</h3>
+        <p>搭建可回答问题的 AI，专家验证直到满意度 &ge;90%</p>
+        <div class="step-table">
+          <div class="step-row header">
+            <div class="step-cell step-num">#</div>
+            <div class="step-cell">动作</div>
+            <div class="step-cell">输入</div>
+            <div class="step-cell">输出</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">3.1</div>
+            <div class="step-cell"><strong>搭建问答流程</strong><br><span style="font-size:0.75rem;color:var(--text-muted)">提问 → 多路检索 wiki → 取原文片段 → Opus 1M 推理 → 带引用回答</span></div>
+            <div class="step-cell">知识库 + 原始转写稿</div>
+            <div class="step-cell">可回答问题的 AI（每个回答带来源引用）</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">3.2</div>
+            <div class="step-cell"><strong>专家验证</strong></div>
+            <div class="step-cell">专家出 20 个真实问题 → AI 回答 → 专家逐题评分</div>
+            <div class="step-cell">评分结果 + 修正清单</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">3.3</div>
+            <div class="step-cell"><strong>迭代优化</strong></div>
+            <div class="step-cell">修正清单</div>
+            <div class="step-cell">重复 3.1-3.2 直到满意度 &ge;90%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="phase-block">
+        <div class="phase-dot">03</div>
+        <h3>反向提炼方法论</h3>
+        <p>从碎片知识聚合为主题文档，再提炼为可交付的方法论</p>
+        <div class="step-table">
+          <div class="step-row header">
+            <div class="step-cell step-num">#</div>
+            <div class="step-cell">动作</div>
+            <div class="step-cell">输入</div>
+            <div class="step-cell">输出</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">4.0</div>
+            <div class="step-cell"><strong>结晶化</strong><br><span style="font-size:0.75rem;color:var(--text-muted)">分散知识聚合为主题文档</span></div>
+            <div class="step-cell">全部 wiki 页面</div>
+            <div class="step-cell">主题文档（如"风险管理"、"客户沟通"等）</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">4.1</div>
+            <div class="step-cell"><strong>批量生成问答</strong></div>
+            <div class="step-cell">主题文档</div>
+            <div class="step-cell">200-300 组覆盖全领域的 Q&A（每条带引用）</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">4.2</div>
+            <div class="step-cell"><strong>提炼核心方法论</strong><br><span style="font-size:0.75rem;color:var(--text-muted)">只取出现 &ge;3 次的知识点</span></div>
+            <div class="step-cell">主题文档 + Q&A</div>
+            <div class="step-cell">方法论文档初稿（框架、步骤、判断依据、适用条件、案例）</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">4.3</div>
+            <div class="step-cell"><strong>专家确认定稿</strong></div>
+            <div class="step-cell">方法论文档初稿</div>
+            <div class="step-cell">经专家确认的正式方法论文档</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="phase-block">
+        <div class="phase-dot">04</div>
+        <h3>交付与持续运营</h3>
+        <p>交付全部产出物，建立新素材自动入库的持续更新机制</p>
+        <div class="step-table">
+          <div class="step-row header">
+            <div class="step-cell step-num">#</div>
+            <div class="step-cell">动作</div>
+            <div class="step-cell">输入</div>
+            <div class="step-cell">输出</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">5.1</div>
+            <div class="step-cell"><strong>交付</strong></div>
+            <div class="step-cell">—</div>
+            <div class="step-cell">方法论文档 + 问答 AI + 结构化知识库 + 原文存档</div>
+          </div>
+          <div class="step-row">
+            <div class="step-cell step-num">5.2</div>
+            <div class="step-cell"><strong>持续更新</strong></div>
+            <div class="step-cell">专家新增视频</div>
+            <div class="step-cell">转写 → Ingest → Lint 质检 → 问答能力自动提升</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== 整体流程 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Overview</div>
+    <h2 class="section-title">整体流程一览</h2>
+
+    <div class="flow-visual">
+      <div class="flow-step">
+        <div class="flow-icon">①</div>
+        <div class="flow-content">
+          <h4>AI 编译</h4>
+          <p>摸底产出的转写稿 → wiki/（知识页面 + 置信度 + supersession 链 + 交叉链接）</p>
+        </div>
+      </div>
+      <div class="flow-sub">每 10 批去重合并 + supersession 处理 + Lint 质检</div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-icon">②</div>
+        <div class="flow-content">
+          <h4>接通问答</h4>
+          <p>多路检索 wiki → 取原文 → Opus 1M 推理 → 专家级回答</p>
+        </div>
+      </div>
+      <div class="flow-sub">专家验证迭代直到满意度 &ge;90%</div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-icon">③</div>
+        <div class="flow-content">
+          <h4>结晶化 + 方法论提炼</h4>
+          <p>碎片知识 → 主题文档 → 方法论提炼（&ge;3 次出现优先）</p>
+        </div>
+      </div>
+      <div class="flow-sub">专家确认定稿</div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-icon">④</div>
+        <div class="flow-content">
+          <h4>持续运营</h4>
+          <p>新素材 Ingest → wiki 自动更新 → AI 持续进化</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    专家知识提取方案 · Agentic Wiki + Opus 1M
+  </div>
+</footer>
+
+</body>
+</html>

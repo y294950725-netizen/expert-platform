@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>提示词自动生产平台</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #ffffff;
+    --bg-warm: #fafaf8;
+    --surface: #f6f6f4;
+    --surface-2: #eeeeec;
+    --border: #e8e8e4;
+    --border-strong: #d4d4d0;
+    --text: #1a1a1a;
+    --text-2: #333333;
+    --text-dim: #666666;
+    --text-muted: #999999;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fde68a;
+    --rose: #dc2626;
+    --rose-bg: #fef2f2;
+    --rose-border: #fecaca;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --purple-border: #ddd6fe;
+    --teal: #0d9488;
+    --teal-bg: #f0fdfa;
+    --teal-border: #99f6e4;
+    --indigo: #4f46e5;
+    --indigo-bg: #eef2ff;
+    --indigo-border: #c7d2fe;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 60px 40px 80px; }
+
+  /* ========== HEADER ========== */
+  .header { text-align: center; margin-bottom: 56px; }
+  .header-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 16px; background: var(--indigo-bg); border: 1px solid var(--indigo-border);
+    border-radius: 100px; font-size: 0.72rem; font-weight: 700;
+    color: var(--indigo); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1.2rem;
+  }
+  .header h1 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.8rem; }
+  .header p { font-size: 1rem; color: var(--text-dim); max-width: 580px; margin: 0 auto; line-height: 1.8; }
+
+  /* ========== POSITION FLOW ========== */
+  .pos-flow {
+    display: flex; align-items: center; justify-content: center; gap: 0;
+    margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .pos-node {
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1rem 1.4rem; text-align: center; box-shadow: var(--shadow-sm); min-width: 160px;
+  }
+  .pos-node.active { border-color: var(--indigo-border); background: var(--indigo-bg); box-shadow: var(--shadow); }
+  .pos-node h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .pos-node p { font-size: 0.72rem; color: var(--text-muted); }
+  .pos-arrow { color: var(--border-strong); font-size: 1.2rem; padding: 0 8px; flex-shrink: 0; }
+
+  .pos-callout {
+    background: var(--bg-warm); border: 1px solid var(--border); border-left: 3px solid var(--indigo);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 1rem 1.5rem; margin-bottom: 48px; font-size: 0.88rem; color: var(--text-dim); line-height: 1.7;
+  }
+  .pos-callout strong { color: var(--text); }
+
+  /* ========== DIVIDER ========== */
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 48px 0; }
+
+  /* ========== SECTION ========== */
+  .section { margin-bottom: 48px; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 2.5px;
+    text-transform: uppercase; margin-bottom: 0.6rem;
+  }
+  .section-label::before { content: ''; width: 6px; height: 6px; border-radius: 2px; }
+  .section-label.indigo { color: var(--indigo); }
+  .section-label.indigo::before { background: var(--indigo); }
+  .section-label.purple { color: var(--purple); }
+  .section-label.purple::before { background: var(--purple); }
+  .section-label.blue { color: var(--blue); }
+  .section-label.blue::before { background: var(--blue); }
+  .section-label.green { color: var(--green); }
+  .section-label.green::before { background: var(--green); }
+  .section-label.amber { color: var(--amber); }
+  .section-label.amber::before { background: var(--amber); }
+
+  .section h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .section > p { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1.5rem; max-width: 600px; }
+
+  /* ========== THREE LAYERS ========== */
+  .layers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 1.5rem; }
+  .layer-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.5rem; box-shadow: var(--shadow-sm); transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .layer-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .layer-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .layer-card:nth-child(1)::before { background: linear-gradient(90deg, var(--purple), var(--indigo)); }
+  .layer-card:nth-child(2)::before { background: linear-gradient(90deg, var(--blue), var(--teal)); }
+  .layer-card:nth-child(3)::before { background: linear-gradient(90deg, var(--amber), #ea580c); }
+
+  .layer-card .lc-tag {
+    display: inline-block; padding: 3px 10px; border-radius: 5px;
+    font-size: 0.68rem; font-weight: 700; margin-bottom: 0.8rem; border: 1px solid;
+  }
+  .layer-card:nth-child(1) .lc-tag { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-border); }
+  .layer-card:nth-child(2) .lc-tag { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+  .layer-card:nth-child(3) .lc-tag { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+
+  .layer-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .layer-card > p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.65; margin-bottom: 0.8rem; }
+
+  .layer-items { list-style: none; }
+  .layer-items li {
+    font-size: 0.78rem; color: var(--text-dim); padding: 0.3rem 0;
+    border-bottom: 1px solid var(--surface-2); line-height: 1.55;
+  }
+  .layer-items li:last-child { border-bottom: none; }
+  .layer-items li strong { color: var(--text-2); }
+
+  .layer-summary {
+    background: var(--bg-warm); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 1rem 1.4rem; font-size: 0.85rem; color: var(--text-dim); text-align: center;
+  }
+  .layer-summary strong { color: var(--text); }
+
+  /* ========== COMPILE STRATEGY ========== */
+  .strategy-table {
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 20px;
+  }
+  .st-row {
+    display: grid; grid-template-columns: 110px 180px 1fr;
+    border-bottom: 1px solid var(--border); transition: background 0.15s;
+  }
+  .st-row:last-child { border-bottom: none; }
+  .st-row:hover { background: var(--bg-warm); }
+  .st-row.st-header {
+    background: var(--surface); font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.5px; color: var(--text-dim); text-transform: uppercase;
+  }
+  .st-cell {
+    padding: 0.8rem 1.2rem; font-size: 0.82rem; color: var(--text-dim);
+    line-height: 1.55; border-right: 1px solid var(--border);
+  }
+  .st-cell:last-child { border-right: none; }
+  .st-cell strong { color: var(--text); font-weight: 600; }
+
+  .tag-inline {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.7rem; font-weight: 600; border: 1px solid;
+  }
+  .tag-high { background: var(--rose-bg); color: var(--rose); border-color: var(--rose-border); }
+  .tag-mid { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+  .tag-low { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+
+  /* ========== WORKFLOW ========== */
+  .workflow-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .wf-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.4rem; text-align: center; box-shadow: var(--shadow-sm); transition: all 0.25s;
+  }
+  .wf-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .wf-icon {
+    width: 42px; height: 42px; border-radius: 11px; margin: 0 auto 0.8rem;
+    display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid;
+  }
+  .wf-card:nth-child(1) .wf-icon { background: var(--blue-bg); border-color: var(--blue-border); }
+  .wf-card:nth-child(2) .wf-icon { background: var(--indigo-bg); border-color: var(--indigo-border); }
+  .wf-card:nth-child(3) .wf-icon { background: var(--amber-bg); border-color: var(--amber-border); }
+  .wf-card:nth-child(4) .wf-icon { background: var(--green-bg); border-color: var(--green-border); }
+  .wf-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .wf-card p { font-size: 0.75rem; color: var(--text-dim); line-height: 1.55; }
+
+  .wf-metrics {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px;
+  }
+  .wf-metric {
+    background: var(--surface); border-radius: var(--radius-sm); padding: 0.8rem;
+    text-align: center; border: 1px solid var(--border);
+  }
+  .wf-metric .num { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.1rem; }
+  .wf-metric .num.green { color: var(--green); }
+  .wf-metric .num.amber { color: var(--amber); }
+  .wf-metric .label { font-size: 0.68rem; color: var(--text-muted); }
+
+  /* ========== RUNTIME ========== */
+  .runtime-flow {
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 2rem; box-shadow: var(--shadow-sm);
+  }
+  .rf-step {
+    display: flex; align-items: center; gap: 14px; padding: 0.6rem 0;
+  }
+  .rf-icon {
+    width: 32px; height: 32px; border-radius: 8px; display: flex;
+    align-items: center; justify-content: center; font-size: 0.75rem;
+    font-weight: 800; flex-shrink: 0; border: 1px solid;
+  }
+  .rf-step:nth-child(1) .rf-icon { background: var(--surface); color: var(--text-dim); border-color: var(--border); }
+  .rf-step:nth-child(2) .rf-icon { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-border); }
+  .rf-step:nth-child(3) .rf-icon { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+  .rf-step:nth-child(4) .rf-icon { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+  .rf-step:nth-child(5) .rf-icon { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+
+  .rf-text h4 { font-size: 0.85rem; font-weight: 600; }
+  .rf-text p { font-size: 0.75rem; color: var(--text-muted); }
+  .rf-arrow { margin-left: 14px; color: var(--border-strong); font-size: 0.8rem; opacity: 0.4; padding: 0.1rem 0; }
+
+  /* ========== FOOTER ========== */
+  footer {
+    border-top: 1px solid var(--border); padding: 2rem 0; text-align: center;
+    color: var(--text-muted); font-size: 0.75rem; margin-top: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .pos-flow { flex-direction: column; }
+    .pos-arrow { transform: rotate(90deg); }
+    .layers-grid { grid-template-columns: 1fr; }
+    .workflow-grid { grid-template-columns: 1fr 1fr; }
+    .wf-metrics { grid-template-columns: 1fr; }
+    .st-row { grid-template-columns: 1fr; }
+    .st-cell { border-right: none; border-bottom: 1px solid var(--border); }
+    .container { padding: 40px 20px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ========== HEADER ========== -->
+  <div class="header">
+    <div class="header-badge">Prompt Compiler</div>
+    <h1>提示词自动生产平台</h1>
+    <p>接收专家决策卡片，自动编译为三层提示词体系，让下游对话产品直接驱动专家级对话体验</p>
+  </div>
+
+  <!-- ========== POSITION ========== -->
+  <div class="pos-flow">
+    <div class="pos-node">
+      <h4>📋 专家思维提取平台</h4>
+      <p>产出决策卡片</p>
+    </div>
+    <div class="pos-arrow">→</div>
+    <div class="pos-node active">
+      <h4>💡 提示词自动生产平台</h4>
+      <p>卡片 → 提示词</p>
+    </div>
+    <div class="pos-arrow">→</div>
+    <div class="pos-node">
+      <h4>💬 对话产品</h4>
+      <p>驱动专家对话</p>
+    </div>
+  </div>
+
+  <div class="pos-callout">
+    平台的价值在于<strong>编译</strong>。把面向人类审核的决策卡片，自动转换成 LLM 能稳定执行的指令集。卡片是死的规则，LLM 是概率模型；编译的意义在于用结构化约束消除概率漂移。
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========== THREE LAYERS ========== -->
+  <div class="section">
+    <div class="section-label indigo">Three-Layer System</div>
+    <h2>三层提示词体系</h2>
+
+    <div class="layers-grid">
+      <div class="layer-card">
+        <div class="lc-tag">Layer 1 · 常驻</div>
+        <h3>常驻层</h3>
+        <p>始终加载，定义「这个专家是谁」和「绝对不能做什么」</p>
+        <ul class="layer-items">
+          <li><strong>专家人设</strong> — 身份、语气、风格</li>
+          <li><strong>全局安全规则</strong> — 红线、转介、免责</li>
+          <li><strong>能力边界声明</strong> — 擅长什么、不做什么</li>
+        </ul>
+      </div>
+      <div class="layer-card">
+        <div class="lc-tag">Layer 2 · 动态</div>
+        <h3>动态层</h3>
+        <p>按能力模块组织，根据用户意图实时加载对应模块的决策树指令</p>
+        <ul class="layer-items">
+          <li><strong>完整决策树</strong> → 分步指令</li>
+          <li><strong>判断规则 + 追问路径</strong></li>
+          <li><strong>转向条件 + 示例 case</strong></li>
+        </ul>
+      </div>
+      <div class="layer-card">
+        <div class="lc-tag">Layer 3 · 检索</div>
+        <h3>检索层</h3>
+        <p>全量卡片做 embedding 索引，运行时实时检索补充细节</p>
+        <ul class="layer-items">
+          <li><strong>细节知识片段</strong> — 穴位、体质、禁忌</li>
+          <li><strong>避免模块 Prompt 过长</strong></li>
+          <li><strong>实时按需注入</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="layer-summary">
+      常驻层管「<strong>像不像</strong>」，动态层管「<strong>怎么聊</strong>」，检索层管「<strong>聊什么细节</strong>」
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========== COMPILE STRATEGY ========== -->
+  <div class="section">
+    <div class="section-label purple">Compile Strategy</div>
+    <h2>编译策略</h2>
+    <p>编译不是模板渲染——是把人类可读的决策规则，转换成 LLM 能稳定执行的分步指令。</p>
+
+    <h3 style="font-size:1rem;margin-bottom:0.8rem;">增量分级</h3>
+    <div class="strategy-table">
+      <div class="st-row st-header">
+        <div class="st-cell">增量等级</div>
+        <div class="st-cell">含义</div>
+        <div class="st-cell">编译策略</div>
+      </div>
+      <div class="st-row">
+        <div class="st-cell"><span class="tag-inline tag-high">高增量</span></div>
+        <div class="st-cell">大模型完全不会</div>
+        <div class="st-cell">核心指令，强制语气，配 few-shot 钉死路径</div>
+      </div>
+      <div class="st-row">
+        <div class="st-cell"><span class="tag-inline tag-mid">中增量</span></div>
+        <div class="st-cell">大模型会但不稳定</div>
+        <div class="st-cell">约束条件，提醒 + 纠偏</div>
+      </div>
+      <div class="st-row">
+        <div class="st-cell"><span class="tag-inline tag-low">低增量</span></div>
+        <div class="st-cell">大模型本来就会</div>
+        <div class="st-cell">不放进 prompt，仅验证时校验没退步</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;margin-bottom:0.8rem;margin-top:1.5rem;">置信与审核状态</h3>
+    <div class="strategy-table">
+      <div class="st-row st-header">
+        <div class="st-cell">状态</div>
+        <div class="st-cell">编译策略</div>
+        <div class="st-cell">语气示例</div>
+      </div>
+      <div class="st-row">
+        <div class="st-cell"><strong>已确认 + 高置信</strong></div>
+        <div class="st-cell">正常确定语气</div>
+        <div class="st-cell" style="font-style:italic;font-size:0.78rem;">「根据经验，入睡困难首先要区分三种类型」</div>
+      </div>
+      <div class="st-row">
+        <div class="st-cell"><strong>已确认 + 中置信</strong></div>
+        <div class="st-cell">加柔化表达</div>
+        <div class="st-cell" style="font-style:italic;font-size:0.78rem;">「通常来说……但不同情况可能有差异」</div>
+      </div>
+      <div class="st-row">
+        <div class="st-cell"><strong>有争议 ⚠️</strong></div>
+        <div class="st-cell">呈现多观点，不下定论</div>
+        <div class="st-cell" style="font-style:italic;font-size:0.78rem;">「关于这个问题有两种看法……」</div>
+      </div>
+      <div class="st-row">
+        <div class="st-cell"><strong>低置信 ❓</strong></div>
+        <div class="st-cell">加专业建议</div>
+        <div class="st-cell" style="font-style:italic;font-size:0.78rem;">「这方面建议咨询专业医师确认」</div>
+      </div>
+      <div class="st-row">
+        <div class="st-cell"><strong>已废弃 ❌</strong></div>
+        <div class="st-cell">不编译，不入 prompt</div>
+        <div class="st-cell">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========== WORKFLOW ========== -->
+  <div class="section">
+    <div class="section-label blue">Workflow</div>
+    <h2>平台工作流</h2>
+
+    <div class="workflow-grid">
+      <div class="wf-card">
+        <div class="wf-icon">📋</div>
+        <h4>导入</h4>
+        <p>创建专家项目，配置身份/模块/规则/风格，导入质检通过的决策卡片</p>
+      </div>
+      <div class="wf-card">
+        <div class="wf-icon">⚙️</div>
+        <h4>编译</h4>
+        <p>自动将卡片编译为三层提示词，按增量分级 + 置信策略差异化注入</p>
+      </div>
+      <div class="wf-card">
+        <div class="wf-icon">🧪</div>
+        <h4>验证</h4>
+        <p>用卡片示例 case 自动批量测试，验证路由/路径/边界/跨模块跳转</p>
+      </div>
+      <div class="wf-card">
+        <div class="wf-icon">🚀</div>
+        <h4>发布</h4>
+        <p>验证通过后三层提示词打包输出，下游对话产品直接接入</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========== RUNTIME ========== -->
+  <div class="section">
+    <div class="section-label green">Runtime</div>
+    <h2>三层协作机制</h2>
+    <p>下游对话产品每轮对话按以下逻辑组装完整 prompt：</p>
+
+    <div class="runtime-flow">
+      <div class="rf-step">
+        <div class="rf-icon">💬</div>
+        <div class="rf-text">
+          <h4>用户说了一句话</h4>
+        </div>
+      </div>
+      <div class="rf-arrow">↓</div>
+      <div class="rf-step">
+        <div class="rf-icon">L1</div>
+        <div class="rf-text">
+          <h4>常驻层</h4>
+          <p>始终在 system prompt 里，定义人设和安全规则</p>
+        </div>
+      </div>
+      <div class="rf-arrow">+</div>
+      <div class="rf-step">
+        <div class="rf-icon">L2</div>
+        <div class="rf-text">
+          <h4>动态层</h4>
+          <p>意图路由后加载对应模块的决策树指令</p>
+        </div>
+      </div>
+      <div class="rf-arrow">+</div>
+      <div class="rf-step">
+        <div class="rf-icon">L3</div>
+        <div class="rf-text">
+          <h4>检索层</h4>
+          <p>根据用户这句话检索相关知识片段补充</p>
+        </div>
+      </div>
+      <div class="rf-arrow">↓</div>
+      <div class="rf-step">
+        <div class="rf-icon">→</div>
+        <div class="rf-text">
+          <h4>组装完整 prompt → LLM → 专家级回复</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ========== SUMMARY ========== -->
+  <div class="pos-callout" style="border-left-color:var(--green);">
+    <strong>总结</strong>：平台 = 编译器 + 验证器。输入决策卡片，输出三层提示词体系。上游给知识，下游做对话，平台只做中间的翻译和质检。
+  </div>
+
+</div>
+
+<footer>
+  <div class="container" style="padding:0 40px;">
+    提示词自动生产平台 · 卡片 → 编译 → 验证 → 三层提示词
+  </div>
+</footer>
+
+</body>
+</html>

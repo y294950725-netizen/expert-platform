@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>专家思维提取平台</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap');
+
+  :root {
+    --bg: #ffffff;
+    --bg-warm: #fafaf8;
+    --surface: #f6f6f4;
+    --surface-2: #eeeeec;
+    --border: #e8e8e4;
+    --border-strong: #d4d4d0;
+    --text: #1a1a1a;
+    --text-2: #333333;
+    --text-dim: #666666;
+    --text-muted: #999999;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --accent-mid: #dbeafe;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fde68a;
+    --rose: #dc2626;
+    --rose-bg: #fef2f2;
+    --rose-border: #fecaca;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --purple-border: #ddd6fe;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -300px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(37,99,235,0.06) 0%, rgba(124,58,237,0.03) 40%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 18px;
+    background: var(--accent-light);
+    border: 1px solid var(--blue-border);
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.6rem, 5.5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    max-width: 600px;
+    line-height: 1.85;
+    margin-bottom: 3.5rem;
+  }
+
+  .hero-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 700px;
+    width: 100%;
+  }
+
+  .hero-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .hero-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+  }
+
+  .hero-card .icon { font-size: 1.8rem; margin-bottom: 0.8rem; display: block; }
+  .hero-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--text); }
+  .hero-card p { font-size: 0.8rem; color: var(--text-muted); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    animation: float 2.5s ease-in-out infinite;
+  }
+
+  .scroll-hint svg { width: 18px; height: 18px; opacity: 0.4; }
+
+  @keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ===================== LAYOUT ===================== */
+  .container { max-width: 1060px; margin: 0 auto; padding: 0 2rem; }
+
+  section { padding: 5rem 0; position: relative; }
+  section + section { border-top: 1px solid var(--border); }
+  section:nth-child(even) { background: var(--bg-warm); }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .section-title {
+    font-size: clamp(1.7rem, 3vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+  }
+
+  .section-desc {
+    font-size: 1rem;
+    color: var(--text-dim);
+    max-width: 560px;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+  }
+
+  /* ===================== RACI ===================== */
+  .raci-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .raci-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.8rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .raci-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .raci-card:nth-child(1)::before { background: linear-gradient(90deg, var(--amber), #ea580c); }
+  .raci-card:nth-child(2)::before { background: linear-gradient(90deg, var(--blue), var(--purple)); }
+  .raci-card:nth-child(3)::before { background: linear-gradient(90deg, var(--green), #059669); }
+
+  .raci-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+
+  .raci-role {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .raci-card:nth-child(1) .raci-role { color: var(--amber); }
+  .raci-card:nth-child(2) .raci-role { color: var(--blue); }
+  .raci-card:nth-child(3) .raci-role { color: var(--green); }
+
+  .raci-do, .raci-dont { font-size: 0.88rem; line-height: 1.9; }
+  .raci-do { color: var(--text-2); margin-bottom: 0.8rem; }
+  .raci-dont { color: var(--text-muted); }
+  .raci-do span { color: var(--green); margin-right: 6px; font-weight: 600; }
+  .raci-dont span { color: var(--rose); margin-right: 6px; opacity: 0.5; }
+
+  /* ===================== PIPELINE ===================== */
+  .phase { position: relative; margin-bottom: 2.5rem; }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 1.2rem;
+  }
+
+  .phase-number {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .phase:nth-child(1) .phase-number { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+  .phase:nth-child(2) .phase-number { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .phase:nth-child(3) .phase-number { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+
+  .phase-meta h3 { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+  .phase-meta p { font-size: 0.85rem; color: var(--text-dim); }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+    padding-left: 62px;
+  }
+
+  .step {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.2rem 1.4rem;
+    transition: all 0.25s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .step:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow);
+  }
+
+  .step-id {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .phase:nth-child(1) .step-id { color: var(--blue); }
+  .phase:nth-child(2) .step-id { color: var(--purple); }
+  .phase:nth-child(3) .step-id { color: var(--green); }
+
+  .step h4 { font-size: 0.92rem; font-weight: 600; margin-bottom: 0.3rem; color: var(--text); }
+  .step p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.65; }
+
+  .phase-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0;
+    margin-left: 22px;
+    color: var(--text-muted);
+    opacity: 0.3;
+  }
+  .phase-connector svg { width: 18px; height: 18px; }
+
+  /* ===================== CASE ===================== */
+  .case-study {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .case-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-warm);
+  }
+
+  .case-header .case-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  .case-header h3 { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+  .case-header p { font-size: 0.8rem; color: var(--text-muted); }
+
+  .case-body { display: grid; grid-template-columns: repeat(3, 1fr); }
+
+  .case-col {
+    padding: 1.5rem 1.8rem;
+    border-right: 1px solid var(--border);
+  }
+  .case-col:last-child { border-right: none; }
+
+  .case-phase-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  .case-col:nth-child(1) .case-phase-label { color: var(--blue); }
+  .case-col:nth-child(2) .case-phase-label { color: var(--purple); }
+  .case-col:nth-child(3) .case-phase-label { color: var(--green); }
+
+  .case-col p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+
+  .case-col .output-tag {
+    display: inline-block;
+    margin-top: 0.6rem;
+    padding: 4px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+
+  /* ===================== DELIVERABLES ===================== */
+  .deliverables-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 2.5rem;
+  }
+
+  .deliverable {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .deliverable:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+  }
+
+  .deliverable .d-icon {
+    width: 50px; height: 50px;
+    border-radius: 12px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+  }
+
+  .deliverable:nth-child(1) .d-icon { background: var(--blue-bg); border: 1px solid var(--blue-border); }
+  .deliverable:nth-child(2) .d-icon { background: var(--green-bg); border: 1px solid var(--green-border); }
+  .deliverable:nth-child(3) .d-icon { background: var(--amber-bg); border: 1px solid var(--amber-border); }
+
+  .deliverable h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text); }
+  .deliverable p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
+
+  /* ===================== CARD SCHEMA ===================== */
+  .card-schema {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .card-schema-header {
+    padding: 1.5rem 2rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-warm);
+  }
+  .card-schema-header h3 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.2rem; }
+  .card-schema-header p { font-size: 0.82rem; color: var(--text-muted); }
+
+  .schema-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .schema-row:last-child { border-bottom: none; }
+  .schema-row:hover { background: var(--bg-warm); }
+
+  .schema-key {
+    padding: 0.9rem 1.2rem 0.9rem 2rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-2);
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .schema-val {
+    padding: 0.9rem 1.8rem;
+    font-size: 0.84rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .schema-val strong { color: var(--text); font-weight: 600; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .tag-red { background: var(--rose-bg); color: var(--rose); border-color: var(--rose-border); }
+  .tag-green { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+  .tag-amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+  .tag-blue { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+
+  /* ===================== ACCEPTANCE ===================== */
+  .acceptance-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .acceptance-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.4rem 1.6rem;
+    display: flex;
+    gap: 14px;
+    transition: all 0.25s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .acceptance-item:hover {
+    box-shadow: var(--shadow);
+    border-color: var(--border-strong);
+  }
+
+  .acceptance-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+  }
+
+  .acceptance-item:nth-child(1) .acceptance-icon { background: var(--blue-bg); border: 1px solid var(--blue-border); }
+  .acceptance-item:nth-child(2) .acceptance-icon { background: var(--green-bg); border: 1px solid var(--green-border); }
+  .acceptance-item:nth-child(3) .acceptance-icon { background: var(--purple-bg); border: 1px solid var(--purple-border); }
+  .acceptance-item:nth-child(4) .acceptance-icon { background: var(--amber-bg); border: 1px solid var(--amber-border); }
+
+  .acceptance-text h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; color: var(--text); }
+  .acceptance-text p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
+  .acceptance-owner {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+  }
+
+  /* ===================== CALLOUT ===================== */
+  .callout {
+    background: var(--blue-bg);
+    border: 1px solid var(--blue-border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 1.3rem 1.8rem;
+    margin-top: 1.5rem;
+  }
+  .callout p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; }
+  .callout strong { color: var(--text); }
+
+  /* ===================== FAQ ===================== */
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .faq-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.8rem;
+    transition: all 0.3s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .faq-card:hover {
+    box-shadow: var(--shadow);
+    border-color: var(--border-strong);
+  }
+
+  .faq-q { font-size: 0.93rem; font-weight: 700; margin-bottom: 0.7rem; color: var(--text); }
+  .faq-a { font-size: 0.84rem; color: var(--text-dim); line-height: 1.8; }
+  .faq-a strong { color: var(--text-2); }
+
+  /* ===================== FOOTER ===================== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    background: var(--bg-warm);
+  }
+
+  /* ===================== MODAL ===================== */
+  .detail-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 1rem;
+    padding: 8px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .detail-btn:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: var(--shadow); }
+  .detail-btn svg { width: 14px; height: 14px; }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--bg);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 1000px;
+    height: 85vh;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalIn 0.25s ease;
+  }
+
+  @keyframes modalIn {
+    from { transform: translateY(20px) scale(0.97); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-warm);
+    flex-shrink: 0;
+  }
+  .modal-header h3 { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 1rem;
+    color: var(--text-dim);
+  }
+  .modal-close:hover { background: var(--surface); border-color: var(--border-strong); }
+
+  .modal iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 768px) {
+    .hero-cards, .raci-grid, .deliverables-grid, .case-body { grid-template-columns: 1fr; }
+    .faq-grid, .acceptance-grid { grid-template-columns: 1fr; }
+    .steps { padding-left: 0; }
+    .schema-row { grid-template-columns: 1fr; }
+    .schema-key { border-right: none; border-bottom: 1px solid var(--border); }
+    .case-col { border-right: none; border-bottom: 1px solid var(--border); }
+    section { padding: 3.5rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="hero-badge">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    Expert Knowledge Extraction
+  </div>
+  <h1>专家思维提取平台</h1>
+  <p class="hero-sub">将专家素材转化为结构化决策规则，标注场景边界与效果上限，<br>交付可复用、可审核、可评估的规则资产</p>
+
+  <div class="hero-cards">
+    <div class="hero-card">
+      <span class="icon">💡</span>
+      <h3>专家</h3>
+      <p>提供素材 · 审核确认</p>
+    </div>
+    <div class="hero-card">
+      <span class="icon">⚙️</span>
+      <h3>平台</h3>
+      <p>提取规则 · 标注天花板</p>
+    </div>
+    <div class="hero-card">
+      <span class="icon">📱</span>
+      <h3>产品</h3>
+      <p>用天花板做产品效果</p>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>向下滚动</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+  </div>
+</section>
+
+<!-- ========== 职责 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Roles & Responsibilities</div>
+    <h2 class="section-title">职责与分工</h2>
+    <div class="raci-grid">
+      <div class="raci-card">
+        <div class="raci-role">专家</div>
+        <div class="raci-do">
+          <span>✓</span> 审核卡片对错<br>
+          <span>✓</span> 裁决矛盾<br>
+          <span>✓</span> 补空白
+        </div>
+        <div class="raci-dont">
+          <span>✗</span> 不做结构化
+        </div>
+      </div>
+      <div class="raci-card">
+        <div class="raci-role">平台</div>
+        <div class="raci-do">
+          <span>✓</span> 设计模板<br>
+          <span>✓</span> 跑提取流水线<br>
+          <span>✓</span> 看 AI 质检报告<br>
+          <span>✓</span> 迭代体系
+        </div>
+        <div class="raci-dont">
+          <span>✗</span> 不从零填卡片<br>
+          <span>✗</span> 不替专家判断对错
+        </div>
+      </div>
+      <div class="raci-card">
+        <div class="raci-role">产品</div>
+        <div class="raci-do">
+          <span>✓</span> 定场景优先级<br>
+          <span>✓</span> 反馈模板好用度<br>
+          <span>✓</span> 人工抽检
+        </div>
+        <div class="raci-dont">
+          <span>✗</span> 不判断专业对错
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 流水线 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Pipeline</div>
+    <h2 class="section-title">三阶段流水线</h2>
+
+    <div class="pipeline">
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-number">01</div>
+          <div class="phase-meta">
+            <h3>摸底</h3>
+            <p>搞清楚专家有哪些能力模块、哪些值得提取</p>
+          </div>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-id">Step 1</div>
+            <h4>全量转文本</h4>
+            <p>视频转录、书/PDF/PPT 提取，统一变成文本语料库，标注来源和位置</p>
+          </div>
+          <div class="step">
+            <div class="step-id">Step 2</div>
+            <h4>主题聚类 → 能力模块归纳</h4>
+            <p>AI 将全部素材聚类为话题，再归纳为 15-20 个能力模块，专家确认划分和产品范围</p>
+          </div>
+          <div class="step">
+            <div class="step-id">Step 3</div>
+            <h4>自动提取决策树骨架</h4>
+            <p>从素材中自动提取每个模块的决策路径，生成决策树初稿，用于下一步诊断测试</p>
+          </div>
+          <div class="step">
+            <div class="step-id">Step 4</div>
+            <h4>在决策树上做诊断</h4>
+            <p>每个分叉节点跑两个测试：截断测试（对不对）+ 一致性测试（稳不稳），证明「不会」或「会但不稳」</p>
+          </div>
+          <div class="step">
+            <div class="step-id">Step 5</div>
+            <h4>输出优先级 + baseline</h4>
+            <p>按「差距 × 复杂度」2×2 矩阵交叉排优先级，同时产出 baseline 数据供提取后对比</p>
+          </div>
+        </div>
+        <button class="detail-btn" onclick="document.getElementById('modiModal').classList.add('active')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          查看摸底方案详情
+        </button>
+      </div>
+
+      <div class="phase-connector">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-number">02</div>
+          <div class="phase-meta">
+            <h3>提取</h3>
+            <p>通过 Agentic Wiki 将素材编译为结构化知识，接通问答并提炼方法论</p>
+          </div>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-id">Step 6</div>
+            <h4>AI 编译知识库</h4>
+            <p>摸底产出的转写稿分批编译为 wiki 知识页面，每条标注来源、权重、置信度，每 10 批跨批去重合并</p>
+          </div>
+          <div class="step">
+            <div class="step-id">Step 7</div>
+            <h4>接通问答</h4>
+            <p>多路检索 wiki + 原文片段 → Opus 1M 推理 → 专家级回答（带来源引用），专家验证迭代</p>
+          </div>
+          <div class="step">
+            <div class="step-id">Step 8</div>
+            <h4>反向提炼方法论</h4>
+            <p>碎片知识结晶化为主题文档，批量生成 Q&A，只取出现 &ge;3 次的知识点提炼为方法论文档</p>
+          </div>
+        </div>
+        <button class="detail-btn" onclick="document.getElementById('extractModal').classList.add('active')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          查看提取方案详情
+        </button>
+      </div>
+
+      <div class="phase-connector">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-number">03</div>
+          <div class="phase-meta">
+            <h3>质检</h3>
+            <p>Wiki 知识写成卡片后，经三道质检关卡确认后交付产品</p>
+          </div>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-id">Step 9</div>
+            <h4>Wiki → 场景卡片</h4>
+            <p>将 wiki 知识页面按统一 Schema 写成可执行的场景卡片</p>
+          </div>
+          <div class="step">
+            <div class="step-id">Step 10</div>
+            <h4>机器 Check</h4>
+            <p>AI 自动检查：事实一致性、Schema 完整性、逻辑一致性、来源可追溯、跨卡片冲突</p>
+          </div>
+          <div class="step">
+            <div class="step-id">Step 11</div>
+            <h4>团队人工 Check</h4>
+            <p>审核表达清晰度、场景覆盖度、可执行性，对矛盾做初步裁决建议</p>
+          </div>
+          <div class="step">
+            <div class="step-id">Step 12</div>
+            <h4>专家 Check + 交付</h4>
+            <p>专家确认专业正确性、红线/禁忌、矛盾裁决，通过后卡片入库交付产品</p>
+          </div>
+        </div>
+        <button class="detail-btn" onclick="document.getElementById('qaModal').classList.add('active')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          查看质检方案详情
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Case Study ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Case Study</div>
+    <h2 class="section-title">实例：付国兵 · 腹部按摩助眠</h2>
+    <p class="section-desc">200 个抖音视频 + 3 本书 + 5 个访谈 → 流水线跑一遍</p>
+
+    <div class="case-study">
+      <div class="case-header">
+        <div class="case-icon">🏥</div>
+        <div>
+          <h3>付国兵 · 腹部按摩助眠</h3>
+          <p>素材：200 视频 + 3 书 + 5 访谈</p>
+        </div>
+      </div>
+      <div class="case-body">
+        <div class="case-col">
+          <div class="case-phase-label">摸底</div>
+          <p>200 视频+3 书+5 访谈转文本 → 聚出 40 话题 → 归纳 20 模块 → 自动提取决策树 → 截断测试：通用大模型在「腹部按摩」节点跳过力度和方向判断 → 一致性测试：5 次回答 3 种不同方案</p>
+          <span class="output-tag">→ 标记为「高优先级提取」+ baseline</span>
+        </div>
+        <div class="case-col">
+          <div class="case-phase-label">提取</div>
+          <p>6 个素材综合提取 1 张卡片（不是 6 张），优先采信访谈；发现视频 #23 说顺时针、#112 说先逆后顺</p>
+          <span class="output-tag">→ 1 张卡片 + 1 个矛盾待裁决</span>
+        </div>
+        <div class="case-col">
+          <div class="case-phase-label">质检</div>
+          <p>通用大模型缺力度和禁忌 → 增量等级：中；AI 质检通过；专家裁决方向矛盾</p>
+          <span class="output-tag">→ 已确认卡片入库 ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 交付物 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Deliverables</div>
+    <h2 class="section-title">交付物</h2>
+    <p class="section-desc">三大核心交付，附带模板、SOP、验证数据、覆盖边界说明与矛盾标注表。</p>
+
+    <div class="deliverables-grid">
+      <div class="deliverable">
+        <div class="d-icon">📋</div>
+        <h4>场景卡片库</h4>
+        <p>结构化决策规则<br>可直接给产品使用</p>
+      </div>
+      <div class="deliverable">
+        <div class="d-icon">⚡</div>
+        <h4>提取流水线</h4>
+        <p>从素材到卡片的自动化流程<br>新专家可复用</p>
+      </div>
+      <div class="deliverable">
+        <div class="d-icon">✅</div>
+        <h4>质检标准</h4>
+        <p>增量标注规范 + AI 质检<br>+ 验收标准</p>
+      </div>
+    </div>
+
+    <div class="card-schema">
+      <div class="card-schema-header">
+        <h3>卡片结构示例</h3>
+        <p>以「失眠分型与初始干预」为例（虚构，仅展示完整形态）</p>
+      </div>
+      <div class="schema-rows">
+        <div class="schema-row">
+          <div class="schema-key">主题</div>
+          <div class="schema-val"><strong>失眠分型与初始干预</strong></div>
+        </div>
+        <div class="schema-row">
+          <div class="schema-key">适用场景</div>
+          <div class="schema-val">用户主诉「睡不着」「失眠」「睡眠不好」</div>
+        </div>
+        <div class="schema-row">
+          <div class="schema-key">判断规则</div>
+          <div class="schema-val">必须先区分：<strong>入睡困难</strong>（躺下 >30min）、<strong>早醒</strong>（<5h 后醒）、<strong>维持困难</strong>（频繁醒）。不同类型方案不同，不可混用。</div>
+        </div>
+        <div class="schema-row">
+          <div class="schema-key">追问路径</div>
+          <div class="schema-val">① 共情接住 → ② 哪种睡不着（分型）→ ③ 追问原因 → ④ 持续多久？试过什么？<br><span style="color:var(--text-muted)">旁路：拒绝追问 → 先给呼吸法，后续自然收集线索</span></div>
+        </div>
+        <div class="schema-row">
+          <div class="schema-key">转向条件</div>
+          <div class="schema-val">入睡+想事 → 认知干预 ｜ 入睡+没想事 → 节律调节 ｜ 早醒+情绪低 → <span class="tag tag-red">触发红线</span></div>
+        </div>
+        <div class="schema-row">
+          <div class="schema-key">禁用边界</div>
+          <div class="schema-val">
+            <span class="tag tag-red">⚠ 早醒+绝望 → 转介</span>&nbsp;
+            <span class="tag tag-amber">自行用药 → 警告+就医</span>&nbsp;
+            <span class="tag tag-red">自伤倾向 → 危机干预</span>
+          </div>
+        </div>
+        <div class="schema-row">
+          <div class="schema-key">置信等级</div>
+          <div class="schema-val"><span class="tag tag-green">高</span> &nbsp;<span class="tag tag-amber">中</span> &nbsp;<span class="tag tag-blue">低</span></div>
+        </div>
+        <div class="schema-row">
+          <div class="schema-key">审核状态</div>
+          <div class="schema-val">
+            <span class="tag tag-green">已确认 ✓</span> &nbsp;
+            <span class="tag tag-amber">有争议 ⚠</span> &nbsp;
+            <span class="tag tag-blue">低置信 ❓</span> &nbsp;
+            <span class="tag tag-red">已废弃 ✗</span>
+          </div>
+        </div>
+        <div class="schema-row">
+          <div class="schema-key">示例 Case</div>
+          <div class="schema-val">
+            <strong>正例：</strong>躺 2h 睡不着+脑子转 → 入睡困难-焦虑型<br>
+            <strong>反例：</strong>凌晨 4 点醒+心情差 → 触发红线 → 转介<br>
+            <strong>旁路：</strong>「别问了直接说怎么办」→ 先给呼吸法
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 验收 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Acceptance Criteria</div>
+    <h2 class="section-title">验收标准</h2>
+    <p class="section-desc">真复刻 = 答案对 + 思考过程对 + 变体 case 下依然对</p>
+
+    <div class="acceptance-grid">
+      <div class="acceptance-item">
+        <div class="acceptance-icon">🎯</div>
+        <div class="acceptance-text">
+          <h4>提取准确性</h4>
+          <p>是否忠实还原专家判断，推理链是否正确</p>
+          <div class="acceptance-owner">验收方：专家</div>
+        </div>
+      </div>
+      <div class="acceptance-item">
+        <div class="acceptance-icon">🧩</div>
+        <div class="acceptance-text">
+          <h4>结构化程度</h4>
+          <p>是否沉淀为统一格式的规则、条件、边界、案例</p>
+          <div class="acceptance-owner">验收方：专家</div>
+        </div>
+      </div>
+      <div class="acceptance-item">
+        <div class="acceptance-icon">📊</div>
+        <div class="acceptance-text">
+          <h4>覆盖度</h4>
+          <p>是否说明已覆盖 / 部分覆盖 / 未覆盖的场景</p>
+          <div class="acceptance-owner">验收方：专家</div>
+        </div>
+      </div>
+      <div class="acceptance-item">
+        <div class="acceptance-icon">🚀</div>
+        <div class="acceptance-text">
+          <h4>可产品化程度</h4>
+          <p>产品能否基于交付物设计功能或评估效果</p>
+          <div class="acceptance-owner">验收方：产品</div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== 设计选择 FAQ 已删除 ========== -->
+
+<footer>
+  <div class="container">
+    专家思维提取平台 · 将零散经验变成可靠的决策规则
+  </div>
+</footer>
+
+<!-- ========== Modal: 摸底方案详情 ========== -->
+<div class="modal-overlay" id="modiModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>摸底方案详情</h3>
+      <button class="modal-close" onclick="document.getElementById('modiModal').classList.remove('active')">&times;</button>
+    </div>
+    <iframe src="expert-extraction-plan.html"></iframe>
+  </div>
+</div>
+
+<!-- ========== Modal: 提取方案详情 ========== -->
+<div class="modal-overlay" id="extractModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>提取方案详情</h3>
+      <button class="modal-close" onclick="document.getElementById('extractModal').classList.remove('active')">&times;</button>
+    </div>
+    <iframe src="expert-knowledge-system.html"></iframe>
+  </div>
+</div>
+
+<!-- ========== Modal: 质检方案详情 ========== -->
+<div class="modal-overlay" id="qaModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>质检方案详情</h3>
+      <button class="modal-close" onclick="document.getElementById('qaModal').classList.remove('active')">&times;</button>
+    </div>
+    <iframe src="expert-qa-check.html"></iframe>
+  </div>
+</div>
+
+<script>
+  // Close any modal on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('active');
+    });
+  });
+  // Close all modals on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.active').forEach(function(m) {
+        m.classList.remove('active');
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>质检方案</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #ffffff;
+    --bg-warm: #fafaf8;
+    --surface: #f6f6f4;
+    --surface-2: #eeeeec;
+    --border: #e8e8e4;
+    --border-strong: #d4d4d0;
+    --text: #1a1a1a;
+    --text-2: #333333;
+    --text-dim: #666666;
+    --text-muted: #999999;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fde68a;
+    --rose: #dc2626;
+    --rose-bg: #fef2f2;
+    --rose-border: #fecaca;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --purple-border: #ddd6fe;
+    --teal: #0d9488;
+    --teal-bg: #f0fdfa;
+    --teal-border: #99f6e4;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 60px 40px 80px; }
+
+  /* ===================== HEADER ===================== */
+  .header { text-align: center; margin-bottom: 56px; }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 16px;
+    background: var(--green-bg);
+    border: 1px solid var(--green-border);
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  .header h1 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.8rem;
+    color: var(--text);
+  }
+
+  .header p {
+    font-size: 1rem;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+
+  /* ===================== PIPELINE FLOW ===================== */
+  .pipeline-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 56px;
+    flex-wrap: wrap;
+  }
+
+  .pf-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    min-width: 100px;
+  }
+
+  .pf-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    border: 1px solid;
+  }
+
+  .pf-node:nth-child(1) .pf-icon { background: var(--blue-bg); border-color: var(--blue-border); }
+  .pf-node:nth-child(3) .pf-icon { background: var(--purple-bg); border-color: var(--purple-border); }
+  .pf-node:nth-child(5) .pf-icon { background: var(--amber-bg); border-color: var(--amber-border); }
+  .pf-node:nth-child(7) .pf-icon { background: var(--teal-bg); border-color: var(--teal-border); }
+  .pf-node:nth-child(9) .pf-icon { background: var(--rose-bg); border-color: var(--rose-border); }
+  .pf-node:nth-child(11) .pf-icon { background: var(--green-bg); border-color: var(--green-border); }
+
+  .pf-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-2);
+    text-align: center;
+  }
+
+  .pf-arrow {
+    color: var(--border-strong);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* ===================== SECTION ===================== */
+  .section {
+    margin-bottom: 48px;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 48px 0;
+  }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 2px;
+  }
+
+  .section-label.blue { color: var(--blue); }
+  .section-label.blue::before { background: var(--blue); }
+  .section-label.purple { color: var(--purple); }
+  .section-label.purple::before { background: var(--purple); }
+  .section-label.amber { color: var(--amber); }
+  .section-label.amber::before { background: var(--amber); }
+  .section-label.teal { color: var(--teal); }
+  .section-label.teal::before { background: var(--teal); }
+  .section-label.rose { color: var(--rose); }
+  .section-label.rose::before { background: var(--rose); }
+  .section-label.green { color: var(--green); }
+  .section-label.green::before { background: var(--green); }
+
+  .section h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .section > p {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+  }
+
+  /* ===================== CARD WRITE ===================== */
+  .card-write-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .cw-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.2rem 1.4rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s;
+  }
+  .cw-item:hover { box-shadow: var(--shadow); border-color: var(--border-strong); }
+
+  .cw-item h4 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: var(--text);
+  }
+  .cw-item p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .cw-item .field-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+
+  .ft-required { background: var(--rose-bg); color: var(--rose); border: 1px solid var(--rose-border); }
+  .ft-auto { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+  .ft-expert { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+
+  /* ===================== CHECK PHASE ===================== */
+  .check-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+  }
+
+  .check-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 1.2rem 1.6rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-warm);
+  }
+
+  .check-card-header .cc-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    border: 1px solid;
+  }
+
+  .check-card-header h3 { font-size: 0.95rem; font-weight: 700; }
+  .check-card-header .cc-desc { font-size: 0.78rem; color: var(--text-muted); }
+
+  .check-items {
+    padding: 1rem 1.6rem;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--surface-2);
+  }
+  .check-item:last-child { border-bottom: none; }
+
+  .ci-bullet {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.65rem;
+    font-weight: 800;
+    margin-top: 2px;
+  }
+
+  .ci-bullet.auto { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .ci-bullet.human { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .ci-bullet.expert { background: var(--teal-bg); color: var(--teal); border: 1px solid var(--teal-border); }
+
+  .ci-text h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .ci-text p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; }
+
+  /* ===================== RESULT TAGS ===================== */
+  .result-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    padding: 0.8rem 1.6rem 1.2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .result-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1px solid;
+  }
+
+  .rt-pass { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+  .rt-fix { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+  .rt-reject { background: var(--rose-bg); color: var(--rose); border-color: var(--rose-border); }
+  .rt-escalate { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-border); }
+
+  /* ===================== DELIVER ===================== */
+  .deliver-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .deliver-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+  }
+  .deliver-item:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+
+  .deliver-item .di-icon {
+    width: 44px; height: 44px;
+    border-radius: 11px;
+    margin: 0 auto 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  .deliver-item:nth-child(1) .di-icon { background: var(--green-bg); border: 1px solid var(--green-border); }
+  .deliver-item:nth-child(2) .di-icon { background: var(--blue-bg); border: 1px solid var(--blue-border); }
+  .deliver-item:nth-child(3) .di-icon { background: var(--amber-bg); border: 1px solid var(--amber-border); }
+
+  .deliver-item h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .deliver-item p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; }
+
+  /* ===================== CRITERIA TABLE ===================== */
+  .criteria-table {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .ct-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 100px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .ct-row:last-child { border-bottom: none; }
+  .ct-row:hover { background: var(--bg-warm); }
+
+  .ct-row.ct-header {
+    background: var(--surface);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .ct-cell {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+    border-right: 1px solid var(--border);
+  }
+  .ct-cell:last-child { border-right: none; }
+  .ct-cell strong { color: var(--text); font-weight: 600; }
+
+  .ct-cell .pass-rate {
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .pass-rate.high { color: var(--green); }
+  .pass-rate.mid { color: var(--amber); }
+
+  /* ===================== FOOTER ===================== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-top: 20px;
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 768px) {
+    .pipeline-flow { flex-direction: column; }
+    .pf-arrow { transform: rotate(90deg); }
+    .card-write-grid { grid-template-columns: 1fr; }
+    .deliver-grid { grid-template-columns: 1fr; }
+    .ct-row { grid-template-columns: 1fr; }
+    .ct-cell { border-right: none; border-bottom: 1px solid var(--border); }
+    .container { padding: 40px 20px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ========== HEADER ========== -->
+  <div class="header">
+    <div class="header-badge">Quality Assurance</div>
+    <h1>质检方案</h1>
+    <p>将 wiki 知识页面写成场景卡片，经过机器质检、团队人工质检、专家质检三道关卡后交付产品</p>
+  </div>
+
+  <!-- ========== PIPELINE OVERVIEW ========== -->
+  <div class="pipeline-flow">
+    <div class="pf-node">
+      <div class="pf-icon">📖</div>
+      <div class="pf-label">Wiki 知识页</div>
+    </div>
+    <div class="pf-arrow">→</div>
+    <div class="pf-node">
+      <div class="pf-icon">📋</div>
+      <div class="pf-label">写成卡片</div>
+    </div>
+    <div class="pf-arrow">→</div>
+    <div class="pf-node">
+      <div class="pf-icon">🤖</div>
+      <div class="pf-label">机器 Check</div>
+    </div>
+    <div class="pf-arrow">→</div>
+    <div class="pf-node">
+      <div class="pf-icon">👥</div>
+      <div class="pf-label">团队 Check</div>
+    </div>
+    <div class="pf-arrow">→</div>
+    <div class="pf-node">
+      <div class="pf-icon">🧑‍⚕️</div>
+      <div class="pf-label">专家 Check</div>
+    </div>
+    <div class="pf-arrow">→</div>
+    <div class="pf-node">
+      <div class="pf-icon">✅</div>
+      <div class="pf-label">交付产品</div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== STEP 1: WIKI → 卡片 ========== -->
+  <div class="section">
+    <div class="section-label blue">Step 1</div>
+    <h2>Wiki 知识 → 场景卡片</h2>
+    <p>将 wiki 编译层的知识页面按统一 Schema 写成可执行的场景卡片，每张卡片包含以下字段：</p>
+
+    <div class="card-write-grid">
+      <div class="cw-item">
+        <h4>主题 + 适用场景</h4>
+        <p>卡片标题和触发条件，明确这张卡片什么时候被调用</p>
+        <div style="margin-top:0.5rem;">
+          <span class="field-tag ft-auto">AI 生成</span>
+          <span class="field-tag ft-required">必填</span>
+        </div>
+      </div>
+      <div class="cw-item">
+        <h4>判断规则 + 追问路径</h4>
+        <p>决策树的核心分支逻辑，包括分型条件和追问顺序</p>
+        <div style="margin-top:0.5rem;">
+          <span class="field-tag ft-auto">AI 生成</span>
+          <span class="field-tag ft-required">必填</span>
+        </div>
+      </div>
+      <div class="cw-item">
+        <h4>转向条件 + 禁用边界</h4>
+        <p>什么条件下切换方案，什么条件下必须停止/转介</p>
+        <div style="margin-top:0.5rem;">
+          <span class="field-tag ft-auto">AI 生成</span>
+          <span class="field-tag ft-expert">专家确认</span>
+        </div>
+      </div>
+      <div class="cw-item">
+        <h4>来源引用 + 置信度</h4>
+        <p>原始素材出处、来源权重、出现次数、supersession 状态</p>
+        <div style="margin-top:0.5rem;">
+          <span class="field-tag ft-auto">自动继承</span>
+        </div>
+      </div>
+      <div class="cw-item">
+        <h4>示例 Case（正例/反例/旁路）</h4>
+        <p>覆盖典型场景、边界场景和异常路径的具体对话示例</p>
+        <div style="margin-top:0.5rem;">
+          <span class="field-tag ft-auto">AI 生成</span>
+          <span class="field-tag ft-expert">专家补充</span>
+        </div>
+      </div>
+      <div class="cw-item">
+        <h4>审核状态 + 版本</h4>
+        <p>当前卡片在质检流程中的状态和历史修订记录</p>
+        <div style="margin-top:0.5rem;">
+          <span class="field-tag ft-auto">系统管理</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== STEP 2: 机器 CHECK ========== -->
+  <div class="section">
+    <div class="section-label purple">Step 2</div>
+    <h2>机器 Check</h2>
+    <p>AI 自动化质检，批量跑全部卡片，产出质检报告。通过率目标：&ge;85% 直接过关。</p>
+
+    <div class="check-card">
+      <div class="check-card-header">
+        <div class="cc-icon" style="background:var(--purple-bg);border-color:var(--purple-border);">🤖</div>
+        <div>
+          <h3>自动化质检项</h3>
+          <div class="cc-desc">对照 wiki 原文 + 编译规则逐项检查</div>
+        </div>
+      </div>
+      <div class="check-items">
+        <div class="check-item">
+          <div class="ci-bullet auto">1</div>
+          <div class="ci-text">
+            <h4>事实一致性</h4>
+            <p>卡片内容是否与 wiki 原文/raw 素材一致，有无编造、歪曲、遗漏关键信息</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="ci-bullet auto">2</div>
+          <div class="ci-text">
+            <h4>Schema 完整性</h4>
+            <p>所有必填字段是否已填写，格式是否符合规范（如追问路径必须有分支）</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="ci-bullet auto">3</div>
+          <div class="ci-text">
+            <h4>逻辑一致性</h4>
+            <p>判断规则与转向条件是否自洽，有无逻辑矛盾（如 A→B 同时 A→C 无条件区分）</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="ci-bullet auto">4</div>
+          <div class="ci-text">
+            <h4>来源可追溯</h4>
+            <p>每条判断规则是否可追溯到具体 wiki 页面和原始素材，置信度公式是否正确</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="ci-bullet auto">5</div>
+          <div class="ci-text">
+            <h4>跨卡片冲突检测</h4>
+            <p>同一场景是否有多张卡片给出矛盾建议，supersession 链是否正确标注</p>
+          </div>
+        </div>
+      </div>
+      <div class="result-tags">
+        <span class="result-tag rt-pass">✓ 通过 → 进入团队 Check</span>
+        <span class="result-tag rt-fix">⚠ 自动修复 → 再次检查</span>
+        <span class="result-tag rt-escalate">↑ 人工升级 → 标记待团队审核</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== STEP 3: 团队 CHECK ========== -->
+  <div class="section">
+    <div class="section-label amber">Step 3</div>
+    <h2>团队人工 Check</h2>
+    <p>团队重点审核机器质检标记的问题卡片 + 随机抽检通过卡片。聚焦产品可用性和表达质量。</p>
+
+    <div class="check-card">
+      <div class="check-card-header">
+        <div class="cc-icon" style="background:var(--amber-bg);border-color:var(--amber-border);">👥</div>
+        <div>
+          <h3>人工审核项</h3>
+          <div class="cc-desc">默认审核机器标记卡片 + 随机抽检 20% 通过卡片</div>
+        </div>
+      </div>
+      <div class="check-items">
+        <div class="check-item">
+          <div class="ci-bullet human">1</div>
+          <div class="ci-text">
+            <h4>表达清晰度</h4>
+            <p>产品侧能否看懂并直接使用，术语是否需要转换为用户语言</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="ci-bullet human">2</div>
+          <div class="ci-text">
+            <h4>场景覆盖度</h4>
+            <p>卡片是否覆盖了该话题下的主要变体场景，有无明显遗漏</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="ci-bullet human">3</div>
+          <div class="ci-text">
+            <h4>可执行性</h4>
+            <p>判断规则是否具体到可以直接写进 prompt，还是过于模糊需要细化</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="ci-bullet human">4</div>
+          <div class="ci-text">
+            <h4>矛盾裁决标注</h4>
+            <p>对机器检出的跨卡片冲突给出初步裁决建议，供专家最终拍板</p>
+          </div>
+        </div>
+      </div>
+      <div class="result-tags">
+        <span class="result-tag rt-pass">✓ 通过 → 进入专家 Check</span>
+        <span class="result-tag rt-fix">⚠ 打回修改 → 重新生成/补充</span>
+        <span class="result-tag rt-escalate">↑ 升级专家 → 标记为高风险/矛盾</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== STEP 4: 专家 CHECK ========== -->
+  <div class="section">
+    <div class="section-label teal">Step 4</div>
+    <h2>专家 Check</h2>
+    <p>专家只看精选卡片：高风险/高价值/有矛盾/低置信度。核心职责是判断「对不对」，不做格式修改。</p>
+
+    <div class="check-card">
+      <div class="check-card-header">
+        <div class="cc-icon" style="background:var(--teal-bg);border-color:var(--teal-border);">🧑‍⚕️</div>
+        <div>
+          <h3>专家审核项</h3>
+          <div class="cc-desc">只审核团队标记的卡片 + 全部高风险卡片（含红线/禁忌/转介条件）</div>
+        </div>
+      </div>
+      <div class="check-items">
+        <div class="check-item">
+          <div class="ci-bullet expert">1</div>
+          <div class="ci-text">
+            <h4>专业正确性</h4>
+            <p>判断规则和分型是否符合专家实际临床/实战经验，推理链是否正确</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="ci-bullet expert">2</div>
+          <div class="ci-text">
+            <h4>红线/禁忌确认</h4>
+            <p>禁用边界是否准确、充分，有无遗漏的危险场景</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="ci-bullet expert">3</div>
+          <div class="ci-text">
+            <h4>矛盾裁决</h4>
+            <p>对同一话题不同素材中的矛盾做最终裁决：以哪个为准、为什么</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="ci-bullet expert">4</div>
+          <div class="ci-text">
+            <h4>补充缺失</h4>
+            <p>指出卡片未覆盖但实际重要的判断节点或边界条件</p>
+          </div>
+        </div>
+      </div>
+      <div class="result-tags">
+        <span class="result-tag rt-pass">✓ 确认 → 标记「已确认」进入交付</span>
+        <span class="result-tag rt-fix">⚠ 修正 → 标注修正内容，回流补充</span>
+        <span class="result-tag rt-reject">✗ 废弃 → 标记「已废弃」并说明原因</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== STEP 5: 交付产品 ========== -->
+  <div class="section">
+    <div class="section-label green">Step 5</div>
+    <h2>交付产品</h2>
+    <p>通过全部质检的卡片正式入库，产品可直接使用。</p>
+
+    <div class="deliver-grid">
+      <div class="deliver-item">
+        <div class="di-icon">📋</div>
+        <h4>已确认卡片库</h4>
+        <p>经专家确认的结构化决策规则，产品可直接写进 prompt</p>
+      </div>
+      <div class="deliver-item">
+        <div class="di-icon">📊</div>
+        <h4>质检报告</h4>
+        <p>每张卡片的质检链路记录：机器结果、团队批注、专家裁决</p>
+      </div>
+      <div class="deliver-item">
+        <div class="di-icon">⚠️</div>
+        <h4>边界说明</h4>
+        <p>已覆盖/未覆盖场景清单 + 矛盾裁决记录 + 低置信度待验证列表</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ========== 通过标准 ========== -->
+  <div class="section">
+    <div class="section-label rose">Standards</div>
+    <h2>各环节通过标准</h2>
+
+    <div class="criteria-table">
+      <div class="ct-row ct-header">
+        <div class="ct-cell">环节</div>
+        <div class="ct-cell">通过条件</div>
+        <div class="ct-cell">目标通过率</div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell"><strong>机器 Check</strong></div>
+        <div class="ct-cell">5 项检查全部通过，或自动修复后通过</div>
+        <div class="ct-cell"><span class="pass-rate high">&ge;85%</span></div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell"><strong>团队 Check</strong></div>
+        <div class="ct-cell">表达清晰 + 可执行 + 无遗漏，或修改后达标</div>
+        <div class="ct-cell"><span class="pass-rate high">&ge;90%</span></div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell"><strong>专家 Check</strong></div>
+        <div class="ct-cell">专业正确 + 红线完备 + 矛盾已裁决</div>
+        <div class="ct-cell"><span class="pass-rate mid">&ge;80%</span></div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell"><strong>整体交付</strong></div>
+        <div class="ct-cell">卡片状态为「已确认」，三道质检链路完整</div>
+        <div class="ct-cell"><span class="pass-rate high">100%</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="container" style="padding:0 40px;">
+    质检方案 · Wiki 知识 → 卡片 → 三道质检 → 交付产品
+  </div>
+</footer>
+
+</body>
+</html>
