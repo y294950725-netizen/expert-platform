@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>专家数据采集方案</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap');
+
+  :root {
+    --bg: #ffffff;
+    --bg-warm: #fafaf8;
+    --surface: #f6f6f4;
+    --surface-2: #eeeeec;
+    --border: #e8e8e4;
+    --border-strong: #d4d4d0;
+    --text: #1a1a1a;
+    --text-2: #333333;
+    --text-dim: #666666;
+    --text-muted: #999999;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fde68a;
+    --rose: #dc2626;
+    --rose-bg: #fef2f2;
+    --rose-border: #fecaca;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --purple-border: #ddd6fe;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ========== HERO ========== */
+  .hero {
+    position: relative;
+    padding: 6rem 2rem 4rem;
+    text-align: center;
+    background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(37,99,235,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 18px;
+    background: var(--accent-light);
+    border: 1px solid var(--blue-border);
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.2rem;
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    max-width: 580px;
+    margin: 0 auto;
+    line-height: 1.85;
+  }
+
+  /* ========== LAYOUT ========== */
+  .container { max-width: 980px; margin: 0 auto; padding: 0 2rem; }
+
+  section { padding: 4rem 0; position: relative; }
+  section + section { border-top: 1px solid var(--border); }
+  section:nth-child(even) { background: var(--bg-warm); }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+  .section-label::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .section-title {
+    font-size: clamp(1.6rem, 2.8vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-desc {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    max-width: 560px;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+  }
+
+  /* ========== PRINCIPLE ========== */
+  .principle-box {
+    background: var(--blue-bg);
+    border: 1px solid var(--blue-border);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 1.8rem 2.2rem;
+    margin-bottom: 2.5rem;
+  }
+  .principle-box p {
+    font-size: 1.05rem;
+    color: var(--text-2);
+    line-height: 1.8;
+  }
+  .principle-box strong { color: var(--text); }
+
+  /* ========== COMPARISON TABLE ========== */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 2rem;
+  }
+
+  .compare-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.8rem;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+  }
+  .compare-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .compare-card:nth-child(1)::before { background: var(--text-muted); }
+  .compare-card:nth-child(2)::before { background: var(--accent); }
+
+  .compare-card h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .compare-card .cost {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+  .compare-card ul {
+    list-style: none;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 2;
+  }
+  .compare-card ul li::before {
+    content: '·';
+    margin-right: 8px;
+    color: var(--text-muted);
+  }
+
+  /* ========== 6 GAPS ========== */
+  .gaps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .gap-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s;
+  }
+  .gap-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+
+  .gap-num {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    margin-bottom: 0.8rem;
+    background: var(--blue-bg);
+    color: var(--blue);
+    border: 1px solid var(--blue-border);
+  }
+
+  .gap-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .gap-card p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; }
+  .gap-card .gap-reason {
+    margin-top: 0.5rem;
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* ========== WORKFLOW ========== */
+  .workflow-steps {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    margin-bottom: 2.5rem;
+  }
+
+  .wf-step {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 1.8rem 1.5rem;
+    text-align: center;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+  }
+  .wf-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+  .wf-step:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+  .wf-step + .wf-step { border-left: none; }
+
+  .wf-step .wf-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    margin: 0 auto 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+  .wf-step:nth-child(1) .wf-icon { background: var(--surface); border: 1px solid var(--border); }
+  .wf-step:nth-child(2) .wf-icon { background: var(--blue-bg); border: 1px solid var(--blue-border); }
+  .wf-step:nth-child(3) .wf-icon { background: var(--green-bg); border: 1px solid var(--green-border); }
+
+  .wf-step h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .wf-step p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+  .wf-step .wf-who {
+    margin-top: 0.6rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+  .wf-step .wf-time {
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .wf-arrow {
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    color: var(--border-strong);
+    font-size: 1.2rem;
+  }
+
+  /* ========== PROTOCOL ========== */
+  .protocol {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+  }
+
+  .protocol-header {
+    padding: 1.3rem 1.8rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-warm);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .protocol-header .ph-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+  .protocol-header h3 { font-size: 0.95rem; font-weight: 700; }
+  .protocol-header .ph-time {
+    margin-left: auto;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--surface);
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .protocol-body { padding: 0; }
+
+  .proto-step {
+    padding: 1.3rem 1.8rem;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+  .proto-step:last-child { border-bottom: none; }
+  .proto-step:hover { background: var(--bg-warm); }
+
+  .proto-num {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    background: var(--surface);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    margin-top: 2px;
+  }
+
+  .proto-content h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .proto-content p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+
+  .proto-script {
+    margin-top: 0.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 1.2rem;
+    font-size: 0.8rem;
+    color: var(--text-2);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  .proto-questions {
+    margin-top: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .proto-q {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .proto-q .q-text { color: var(--text-2); }
+  .proto-q .q-purpose {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* ========== OUTPUT ========== */
+  .output-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .output-header {
+    padding: 1.3rem 1.8rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-warm);
+  }
+  .output-header h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.15rem; }
+  .output-header p { font-size: 0.78rem; color: var(--text-muted); }
+
+  .output-row {
+    display: grid;
+    grid-template-columns: 130px 1fr auto;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .output-row:last-child { border-bottom: none; }
+  .output-row:hover { background: var(--bg-warm); }
+
+  .output-key {
+    padding: 0.75rem 1rem 0.75rem 1.8rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-2);
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .output-val {
+    padding: 0.75rem 1.2rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .output-src {
+    padding: 0.75rem 1.5rem 0.75rem 0;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 5px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .tag-blue { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+  .tag-green { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+  .tag-amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+  .tag-red { background: var(--rose-bg); color: var(--rose); border-color: var(--rose-border); }
+  .tag-purple { background: var(--purple-bg); color: var(--purple); border-color: var(--purple-border); }
+
+  /* ========== THEORY ========== */
+  .theory-box {
+    background: var(--purple-bg);
+    border: 1px solid var(--purple-border);
+    border-radius: var(--radius);
+    padding: 1.8rem 2rem;
+    margin-top: 2rem;
+  }
+  .theory-box h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--purple);
+    margin-bottom: 0.6rem;
+  }
+  .theory-box p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.8; }
+  .theory-box strong { color: var(--text-2); }
+
+  /* ========== FOOTER ========== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    background: var(--bg-warm);
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 768px) {
+    .compare-grid, .gaps-grid { grid-template-columns: 1fr; }
+    .workflow-steps { flex-direction: column; }
+    .wf-step { border-radius: var(--radius) !important; }
+    .wf-step + .wf-step { border-left: 1px solid var(--border); border-top: none; }
+    .wf-arrow { display: none; }
+    .output-row { grid-template-columns: 1fr; }
+    .output-key { border-right: none; border-bottom: 1px solid var(--border); }
+    .output-src { padding-left: 1.2rem; }
+    .proto-q { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="hero-badge">
+    Data Collection Protocol
+  </div>
+  <h1>专家数据采集方案</h1>
+  <p class="hero-sub">基于 ACTA 认知任务分析方法改造，<br>用最少的专家时间拿到最高密度的增量信息</p>
+</section>
+
+<!-- ========== 专家的作用 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Expert's Role</div>
+    <h2 class="section-title">专家的作用</h2>
+
+    <div class="principle-box">
+      <p>数据包括：<strong>① 原始资料</strong>（视频、书籍、访谈等素材）→ 团队加工提取 → <strong>② 确认与补充</strong>（审核卡片、补缺口、裁矛盾）→ 产出决策卡片。</p>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h3>① 专家提供原始资料</h3>
+        <div class="cost">视频、书籍、访谈、课程等已有素材</div>
+        <ul>
+          <li>结论和方案（"失眠分三种"）</li>
+          <li>基础知识和术语解释</li>
+          <li>正面案例和操作步骤</li>
+          <li>常见问题的标准回答</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <h3>② 专家确认与补充</h3>
+        <div class="cost">团队加工出草稿卡片后，专家审核补充</div>
+        <ul>
+          <li>判断依据（"为什么这么分"）</li>
+          <li>优先级（"先看什么后看什么"）</li>
+          <li>边界和红线（"什么时候不能用"）</li>
+          <li>失败处理（"没效果怎么办"）</li>
+          <li>矛盾裁决和置信度</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 6类缺口 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Information Gap</div>
+    <h2 class="section-title">需要专家补充的信息</h2>
+    <p class="section-desc">以下信息在素材中大概率缺失，需要通过专家访谈定向采集。</p>
+
+    <div class="gaps-grid">
+      <div class="gap-card">
+        <div class="gap-num">1</div>
+        <h4>判断依据</h4>
+        <p>"您看什么线索来区分 A 和 B？"</p>
+        <div class="gap-reason">素材只说分几类，不说为什么这么分</div>
+      </div>
+      <div class="gap-card">
+        <div class="gap-num">2</div>
+        <h4>优先级</h4>
+        <p>"第一步看什么？信息不全先问哪个？"</p>
+        <div class="gap-reason">素材是平铺的，没有顺序</div>
+      </div>
+      <div class="gap-card">
+        <div class="gap-num">3</div>
+        <h4>边界与红线</h4>
+        <p>"什么情况不能用？什么时候该停？"</p>
+        <div class="gap-reason">公开内容只讲对的，不讲不对的</div>
+      </div>
+      <div class="gap-card">
+        <div class="gap-num">4</div>
+        <h4>失败处理</h4>
+        <p>"做了没效果怎么办？多久算没效果？"</p>
+        <div class="gap-reason">没人拍"方案失败"的视频</div>
+      </div>
+      <div class="gap-card">
+        <div class="gap-num">5</div>
+        <h4>矛盾裁决</h4>
+        <p>"素材 A 说 X，素材 B 说 Y，哪个对？"</p>
+        <div class="gap-reason">不同时期说法矛盾，只有专家能定</div>
+      </div>
+      <div class="gap-card">
+        <div class="gap-num">6</div>
+        <h4>置信度</h4>
+        <p>"这条您多确定？有没有还在观察中的？"</p>
+        <div class="gap-reason">专家对外从不说"我不确定"</div>
+      </div>
+    </div>
+
+    <div class="theory-box">
+      <h4>方法论来源：ACTA（Applied Cognitive Task Analysis）</h4>
+      <p>由 Militello & Hutton (1998) 开发的认知任务分析工具包，核心思路是用<strong>结构化探针</strong>挖掘专家的隐性知识——不是问"你知道什么"，而是问"你凭什么做这个判断、新手为什么做不到"。我们将 ACTA 的 Knowledge Audit 探针和 CDM 的 Simulation Interview 做了简化适配：去掉开放式探索，改为固定问句清单；去掉空白挖掘，改为带草稿确认。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 流程 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Workflow</div>
+    <h2 class="section-title">采集流程</h2>
+    <p class="section-desc">三步走，专家总耗时 60-75 分钟，产出一个核心场景的完整决策卡片。</p>
+
+    <div class="workflow-steps">
+      <div class="wf-step">
+        <div class="wf-icon">📄</div>
+        <h4>Phase 0 · 素材预处理</h4>
+        <p>从已有素材提取草稿卡片<br>标出"待问"项</p>
+        <div class="wf-who">执行：团队</div>
+        <div class="wf-time">不占专家时间</div>
+        <span class="wf-arrow">→</span>
+      </div>
+      <div class="wf-step">
+        <div class="wf-icon">💬</div>
+        <h4>Phase 1 · 专家确认会</h4>
+        <p>带着草稿找专家<br>确认 + 补 6 类缺口</p>
+        <div class="wf-who">执行：1 主问 + 1 记录</div>
+        <div class="wf-time">专家 45 min</div>
+        <span class="wf-arrow">→</span>
+      </div>
+      <div class="wf-step">
+        <div class="wf-icon">🧪</div>
+        <h4>Phase 2 · Case 验证会</h4>
+        <p>设计好的 case 让专家走一遍<br>补边界和旁路</p>
+        <div class="wf-who">执行：同上</div>
+        <div class="wf-time">专家 30 min</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Phase 0 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Phase 0</div>
+    <h2 class="section-title">素材预处理：产出草稿卡片</h2>
+    <p class="section-desc">团队独立完成。从已有素材提取能提取的，提取不到的标记为"待问"。</p>
+
+    <div class="output-card">
+      <div class="output-header">
+        <h3>草稿卡片状态标记</h3>
+        <p>带着这张半成品找专家——专家的工作是"改 + 补"，不是"从零讲"</p>
+      </div>
+      <div class="output-row">
+        <div class="output-key">主题/场景</div>
+        <div class="output-val">用户主诉描述</div>
+        <div class="output-src"><span class="tag tag-green">素材可提取</span></div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">判断规则</div>
+        <div class="output-val">有结论（分三种），缺依据（为什么这么分）</div>
+        <div class="output-src"><span class="tag tag-amber">待问依据</span></div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">追问路径</div>
+        <div class="output-val">散落在多个素材，顺序存疑</div>
+        <div class="output-src"><span class="tag tag-amber">待确认顺序</span></div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">方案/做法</div>
+        <div class="output-val">具体操作步骤</div>
+        <div class="output-src"><span class="tag tag-green">素材可提取</span></div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">转向条件</div>
+        <div class="output-val">素材几乎未提及</div>
+        <div class="output-src"><span class="tag tag-red">必须问</span></div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">禁用边界</div>
+        <div class="output-val">偶尔提到，不系统</div>
+        <div class="output-src"><span class="tag tag-red">必须问</span></div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">失败处理</div>
+        <div class="output-val">素材无</div>
+        <div class="output-src"><span class="tag tag-red">必须问</span></div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">置信度</div>
+        <div class="output-val">不可能从素材拿到</div>
+        <div class="output-src"><span class="tag tag-red">必须问</span></div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">矛盾点</div>
+        <div class="output-val">已识别 N 处矛盾</div>
+        <div class="output-src"><span class="tag tag-red">必须裁决</span></div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">正例</div>
+        <div class="output-val">典型案例</div>
+        <div class="output-src"><span class="tag tag-green">素材可提取</span></div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">反例/旁路</div>
+        <div class="output-val">素材极少</div>
+        <div class="output-src"><span class="tag tag-red">必须问</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Phase 1 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Phase 1</div>
+    <h2 class="section-title">专家确认会：访谈协议</h2>
+    <p class="section-desc">每个问题都有固定话术，不依赖访谈者临场发挥。当场记进卡片，不依赖事后整理。</p>
+
+    <div class="protocol">
+      <div class="protocol-header">
+        <div class="ph-icon" style="background:var(--blue-bg);border:1px solid var(--blue-border);">💬</div>
+        <h3>专家确认会执行协议</h3>
+        <div class="ph-time">总计 45 min</div>
+      </div>
+      <div class="protocol-body">
+
+        <div class="proto-step">
+          <div class="proto-num">开场</div>
+          <div class="proto-content">
+            <h4>定调 · 2 min</h4>
+            <div class="proto-script">"X 老师，我们从您的视频和书里整理了一些内容，今天主要想请您看看我们理解得对不对，有些地方我们找不到依据想请教您。"</div>
+          </div>
+        </div>
+
+        <div class="proto-step">
+          <div class="proto-num">01</div>
+          <div class="proto-content">
+            <h4>确认骨架 · 5 min</h4>
+            <p>出示草稿卡片中的流程/判断规则，让专家确认大方向对不对。</p>
+            <div class="proto-script">"我们理解，用户来问 [主诉] 时，您的处理大概是这个流程——对吗？有没有缺步骤或者顺序不对的？"</div>
+            <p style="margin-top:0.5rem;font-size:0.78rem;color:var(--text-muted);">记录：对 → ✓　|　不对 → 原话记修正　|　补了新东西 → 记新增</p>
+          </div>
+        </div>
+
+        <div class="proto-step">
+          <div class="proto-num">02</div>
+          <div class="proto-content">
+            <h4>补判断依据 · 10 min</h4>
+            <p>对标记为"有结论缺依据"的节点逐个追问。</p>
+            <div class="proto-questions">
+              <div class="proto-q">
+                <span class="q-text">"这里您说要分成 A/B/C，您判断一个人属于哪种的时候，<strong>具体看什么</strong>？"</span>
+                <span class="q-purpose">→ 判断线索</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"判断的<strong>第一步</strong>看什么？"</span>
+                <span class="q-purpose">→ 优先级</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"有没有<strong>容易混淆</strong>的情况？怎么区分？"</span>
+                <span class="q-purpose">→ 边界条件</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"有没有<strong>看上去像 A 但其实是 B</strong> 的例子？"</span>
+                <span class="q-purpose">→ 反例</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="proto-step">
+          <div class="proto-num">03</div>
+          <div class="proto-content">
+            <h4>补边界与红线 · 10 min</h4>
+            <p>系统性挖掘"什么时候不能用"和"什么时候必须停"。</p>
+            <div class="proto-questions">
+              <div class="proto-q">
+                <span class="q-text">"<strong>什么人群</strong>不适用这个方案？"</span>
+                <span class="q-purpose">→ 禁忌人群</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"做了之后如果没效果，<strong>多久算没效果</strong>？下一步呢？"</span>
+                <span class="q-purpose">→ 失败处理</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"什么<strong>信号出现</strong>时应该停下来不继续？"</span>
+                <span class="q-purpose">→ 红线</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"有没有<strong>看起来可以做但其实不该做</strong>的情况？"</span>
+                <span class="q-purpose">→ 隐性禁忌</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="proto-step">
+          <div class="proto-num">04</div>
+          <div class="proto-content">
+            <h4>裁决矛盾 · 5 min</h4>
+            <p>将 Phase 0 中识别的素材矛盾逐条出示。</p>
+            <div class="proto-script">"我们注意到 [视频X] 里说 [A]，但 [书Y] 里写的是 [B]。这两个哪个对？还是说不同情况不一样？"</div>
+            <p style="margin-top:0.5rem;font-size:0.78rem;color:var(--text-muted);">记录：裁决结论 + 适用条件（如有）</p>
+          </div>
+        </div>
+
+        <div class="proto-step">
+          <div class="proto-num">05</div>
+          <div class="proto-content">
+            <h4>标置信度 · 3 min</h4>
+            <div class="proto-questions">
+              <div class="proto-q">
+                <span class="q-text">"今天讲的这些里面，有没有哪条您觉得<strong>还在观察中、不是 100% 确定</strong>的？"</span>
+                <span class="q-purpose">→ 低置信标注</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"有没有哪条是'<strong>大部分情况对，但偶尔也有例外</strong>'的？"</span>
+                <span class="q-purpose">→ 中置信标注</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="proto-step">
+          <div class="proto-num">收尾</div>
+          <div class="proto-content">
+            <h4>开放补充 · 2 min</h4>
+            <div class="proto-script">"还有没有什么我们没问到但您觉得重要的？"</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Phase 2 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Phase 2</div>
+    <h2 class="section-title">Case 验证会：模拟访谈</h2>
+    <p class="section-desc">隔 2-3 天，团队整理完卡片后。用设计好的 case 逼出边界条件和旁路处理。</p>
+
+    <div class="protocol">
+      <div class="protocol-header">
+        <div class="ph-icon" style="background:var(--green-bg);border:1px solid var(--green-border);">🧪</div>
+        <h3>Case 验证会执行协议</h3>
+        <div class="ph-time">总计 30 min</div>
+      </div>
+      <div class="protocol-body">
+
+        <div class="proto-step">
+          <div class="proto-num">准备</div>
+          <div class="proto-content">
+            <h4>团队提前做（不占专家时间）</h4>
+            <p>① 把 Phase 1 产出整理成决策树图<br>② 在每个分叉点设计 2 个 case（走不同路径）<br>③ 额外设计 1-2 个模糊 case（刻意在边界上）</p>
+          </div>
+        </div>
+
+        <div class="proto-step">
+          <div class="proto-num">开场</div>
+          <div class="proto-content">
+            <h4>出示决策树 · 2 min</h4>
+            <div class="proto-script">"上次您讲的内容我们整理了一下（出示决策树图）。现在想拿几个 case 让您走一遍，看我们的规则能不能覆盖。"</div>
+          </div>
+        </div>
+
+        <div class="proto-step">
+          <div class="proto-num">逐个</div>
+          <div class="proto-content">
+            <h4>Case 逐个过 · 25 min</h4>
+            <p>每个 case 按以下顺序追问：</p>
+            <div class="proto-questions">
+              <div class="proto-q">
+                <span class="q-text">"这个用户来了，您<strong>第一步</strong>会怎么做？"</span>
+                <span class="q-purpose">→ 验证流程</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"走到这里，您判断他属于<strong>哪种情况</strong>？为什么？"</span>
+                <span class="q-purpose">→ 验证判断规则</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"如果他<strong>同时有 X 又有 Y</strong> 呢？"（模糊 case）</span>
+                <span class="q-purpose">→ 逼出边界</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"如果他说'<strong>别问了直接告诉我怎么办</strong>'？"</span>
+                <span class="q-purpose">→ 逼出旁路</span>
+              </div>
+              <div class="proto-q">
+                <span class="q-text">"新手遇到这个 case <strong>最可能犯什么错</strong>？"</span>
+                <span class="q-purpose">→ 反例</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 产出物 ========== -->
+<section>
+  <div class="container">
+    <div class="section-label">Output</div>
+    <h2 class="section-title">一次采集的产出</h2>
+    <p class="section-desc">一次 Phase 1 + Phase 2（总共 60-75min 专家时间），产出一个核心场景的完整决策卡片。</p>
+
+    <div class="output-card">
+      <div class="output-header">
+        <h3>决策卡片（完整版示例）</h3>
+        <p>每个字段标注来源阶段，确保可追溯</p>
+      </div>
+      <div class="output-row">
+        <div class="output-key">主题</div>
+        <div class="output-val"><strong>失眠分型与初始干预</strong></div>
+        <div class="output-src">素材提取</div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">判断规则</div>
+        <div class="output-val">先看入睡时长 → 再看醒后状态 → 区分入睡困难/早醒/维持困难</div>
+        <div class="output-src">Phase 1 · 步骤 02</div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">追问路径</div>
+        <div class="output-val">① 共情接住 → ② 哪种睡不着 → ③ 追问原因 → ④ 持续多久</div>
+        <div class="output-src">Phase 1 · 步骤 01</div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">转向条件</div>
+        <div class="output-val">入睡+焦虑 → 认知干预 ｜ 入睡+无焦虑 → 节律调节 ｜ 早醒+情绪低 → 转介</div>
+        <div class="output-src">Phase 1 · 步骤 02</div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">禁用边界</div>
+        <div class="output-val">⚠️ 自行用药者 → 警告+就医 ｜ 🚫 自伤倾向 → 危机干预</div>
+        <div class="output-src">Phase 1 · 步骤 03</div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">失败处理</div>
+        <div class="output-val">2 周无改善 → 升级方案 ｜ 4 周无改善 → 建议就医</div>
+        <div class="output-src">Phase 1 · 步骤 03</div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">矛盾裁决</div>
+        <div class="output-val">视频说 A vs 书说 B → 专家裁决为 [结论 + 适用条件]</div>
+        <div class="output-src">Phase 1 · 步骤 04</div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">正例</div>
+        <div class="output-val">躺 2h+脑子转 → 入睡困难-焦虑型</div>
+        <div class="output-src">素材提取</div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">反例</div>
+        <div class="output-val">看起来像入睡困难，实际是早醒（凌晨4点醒+心情差）</div>
+        <div class="output-src">Phase 1 · 步骤 02</div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">旁路</div>
+        <div class="output-val">"别问了直接说怎么办" → 先给呼吸法，后续自然收集线索</div>
+        <div class="output-src">Phase 2</div>
+      </div>
+      <div class="output-row">
+        <div class="output-key">置信度</div>
+        <div class="output-val"><span class="tag tag-green">高</span> 分型规则 ｜ <span class="tag tag-amber">中</span> 2周时限 ｜ <span class="tag tag-purple">观察中</span> 节律调节细节</div>
+        <div class="output-src">Phase 1 · 步骤 05</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    专家数据采集方案 · 基于 ACTA 认知任务分析方法改造
+  </div>
+</footer>
+
+</body>
+</html>
